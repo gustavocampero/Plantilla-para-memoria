@@ -1,0 +1,255 @@
+% $ biblatex auxiliary file $
+% $ biblatex bbl format version 3.3 $
+% Do not modify the above lines!
+%
+% This is an auxiliary file used by the 'biblatex' package.
+% This file may safely be deleted. It will be recreated as
+% required.
+%
+\begingroup
+\makeatletter
+\@ifundefined{ver@biblatex.sty}
+  {\@latex@error
+     {Missing 'biblatex' package}
+     {The bibliography requires the 'biblatex' package.}
+      \aftergroup\endinput}
+  {}
+\endgroup
+
+\datalist[entry]{none/global//global/global/global}
+  \entry{sensify:web}{misc}{}{}
+    \name{author}{1}{}{%
+      {{hash=S}{%
+         family={{Sensify Solutions SA}},
+         familyi={S\bibinitperiod},
+      }}%
+    }
+    \strng{namehash}{S1}
+    \strng{fullhash}{S1}
+    \field{labelnamesource}{author}
+    \field{labeltitlesource}{title}
+    \field{title}{Sensify}
+    \verb{url}
+    \verb https://sensifycloud.com/
+    \endverb
+    \field{year}{2026}
+    \field{urlday}{20}
+    \field{urlmonth}{04}
+    \field{urlyear}{2026}
+  \endentry
+
+  \entry{sensify:n150}{manual}{}{}
+    \list{organization}{1}{%
+      {Sensify S. A. S.}%
+    }
+    \field{labeltitlesource}{title}
+    \field{title}{{N150} Technical Reference Manual}
+    \verb{url}
+    \verb https://www.sensify.com.ar/manuales/N150_general.pdf
+    \endverb
+    \field{year}{2024}
+    \field{urlday}{04}
+    \field{urlmonth}{09}
+    \field{urlyear}{2026}
+  \endentry
+
+  \entry{microchip:pic24fj64gu205}{manual}{}{}
+    \list{organization}{1}{%
+      {Microchip Technology Inc.}%
+    }
+    \field{labeltitlesource}{title}
+    \field{note}{DS40002204D}
+    \field{title}{{PIC24FJ64GU205} Family Data Sheet}
+    \verb{url}
+    \verb https://ww1.microchip.com/downloads/en/DeviceDoc/PIC24FJ64GU205-Famil
+    \verb y-Data-Sheet-DS40002204D.pdf
+    \endverb
+    \field{year}{2021}
+    \field{urlday}{04}
+    \field{urlmonth}{09}
+    \field{urlyear}{2026}
+  \endentry
+
+  \entry{espressif:esp32}{manual}{}{}
+    \list{organization}{1}{%
+      {Espressif Systems}%
+    }
+    \field{labeltitlesource}{title}
+    \field{note}{Rev. 5.3}
+    \field{title}{{ESP32} Technical Reference Manual}
+    \verb{url}
+    \verb https://www.espressif.com/sites/default/files/documentation/esp32_tec
+    \verb hnical_reference_manual_en.pdf
+    \endverb
+    \field{year}{2023}
+    \field{urlday}{04}
+    \field{urlmonth}{09}
+    \field{urlyear}{2026}
+  \endentry
+
+  \entry{quectel:bg95}{misc}{}{}
+    \list{organization}{1}{%
+      {Quectel Wireless Solutions}%
+    }
+    \field{labeltitlesource}{title}
+    \field{title}{{BG95} Cat M1/Cat NB2/EGPRS Series}
+    \verb{url}
+    \verb https://www.quectel.com/product/lpwa-bg95-cat-m1-cat-nb2-egprs-series
+    \verb /
+    \endverb
+    \field{urlday}{04}
+    \field{urlmonth}{09}
+    \field{urlyear}{2026}
+  \endentry
+
+  \entry{SwiftSensors:web}{misc}{}{}
+    \name{author}{1}{}{%
+      {{hash=S}{%
+         family={{Swift Sensors}},
+         familyi={S\bibinitperiod},
+      }}%
+    }
+    \strng{namehash}{S2}
+    \strng{fullhash}{S2}
+    \field{labelnamesource}{author}
+    \field{labeltitlesource}{title}
+    \field{title}{Refrigeration Monitoring}
+    \verb{url}
+    \verb https://www.swiftsensors.com/application/refrigeration-monitoring/
+    \endverb
+    \field{year}{2026}
+    \field{urlday}{20}
+    \field{urlmonth}{04}
+    \field{urlyear}{2026}
+  \endentry
+
+  \entry{Monnit:web}{misc}{}{}
+    \name{author}{1}{}{%
+      {{hash=M}{%
+         family={{Monnit}},
+         familyi={M\bibinitperiod},
+      }}%
+    }
+    \strng{namehash}{M1}
+    \strng{fullhash}{M1}
+    \field{labelnamesource}{author}
+    \field{labeltitlesource}{title}
+    \field{title}{Remote Monitoring Solutions with Wireless Sensors for {IoT}}
+    \verb{url}
+    \verb https://www.monnit.com/
+    \endverb
+    \field{year}{2026}
+    \field{urlday}{20}
+    \field{urlmonth}{04}
+    \field{urlyear}{2026}
+  \endentry
+
+  \entry{Coel:web}{misc}{}{}
+    \name{author}{1}{}{%
+      {{hash=C}{%
+         family={{Coel}},
+         familyi={C\bibinitperiod},
+      }}%
+    }
+    \strng{namehash}{C1}
+    \strng{fullhash}{C1}
+    \field{labelnamesource}{author}
+    \field{labeltitlesource}{title}
+    \field{title}{{X35P} Controlador para Refrigeração}
+    \verb{url}
+    \verb https://www.coel.com.br/produto/x35p-controlador-para-refrigeracao/
+    \endverb
+    \field{year}{2026}
+    \field{urlday}{20}
+    \field{urlmonth}{04}
+    \field{urlyear}{2026}
+  \endentry
+
+  \entry{AoFrio:web}{misc}{}{}
+    \name{author}{1}{}{%
+      {{hash=A}{%
+         family={{AoFrio}},
+         familyi={A\bibinitperiod},
+      }}%
+    }
+    \strng{namehash}{A1}
+    \strng{fullhash}{A1}
+    \field{labelnamesource}{author}
+    \field{labeltitlesource}{title}
+    \field{title}{Soluciones {IoT} para refrigeración comercial}
+    \verb{url}
+    \verb https://www.aofrio.com/es/
+    \endverb
+    \field{year}{2026}
+    \field{urlday}{04}
+    \field{urlmonth}{09}
+    \field{urlyear}{2026}
+  \endentry
+
+  \entry{AoFrioIQ:web}{misc}{}{}
+    \name{author}{1}{}{%
+      {{hash=A}{%
+         family={{AoFrio}},
+         familyi={A\bibinitperiod},
+      }}%
+    }
+    \strng{namehash}{A1}
+    \strng{fullhash}{A1}
+    \field{labelnamesource}{author}
+    \field{labeltitlesource}{title}
+    \field{title}{{AoFrio iQ} para equipos de bebidas frías}
+    \verb{url}
+    \verb https://www.aofrio.com/es/solutions/aofrio-iq-for-cold-drinks-equipme
+    \verb nt
+    \endverb
+    \field{year}{2026}
+    \field{urlday}{04}
+    \field{urlmonth}{09}
+    \field{urlyear}{2026}
+  \endentry
+
+  \entry{IEEE:citation}{book}{}{}
+    \name{author}{1}{}{%
+      {{hash=I}{%
+         family={IEEE},
+         familyi={I\bibinitperiod},
+      }}%
+    }
+    \list{publisher}{1}{%
+      {IEEE Publications}%
+    }
+    \strng{namehash}{I1}
+    \strng{fullhash}{I1}
+    \field{labelnamesource}{author}
+    \field{labeltitlesource}{title}
+    \field{edition}{1}
+    \field{title}{IEEE Citation Reference}
+    \verb{url}
+    \verb http://www.ieee.org/documents/ieeecitationref.pdf
+    \endverb
+    \field{year}{2016}
+    \field{urlday}{26}
+    \field{urlmonth}{09}
+    \field{urlyear}{2016}
+  \endentry
+
+  \entry{CIAA}{misc}{}{}
+    \name{author}{1}{}{%
+      {{hash=P}{%
+         family={{Proyecto CIAA}},
+         familyi={P\bibinitperiod},
+      }}%
+    }
+    \strng{namehash}{P1}
+    \strng{fullhash}{P1}
+    \field{labelnamesource}{author}
+    \field{labeltitlesource}{title}
+    \field{note}{Visitado el 2016-06-25}
+    \field{title}{Computadora Industrial Abierta Argentina}
+    \verb{url}
+    \verb http://proyecto-ciaa.com.ar/devwiki/doku.php?id=start
+    \endverb
+    \field{year}{2014}
+  \endentry
+\enddatalist
+\endinput
