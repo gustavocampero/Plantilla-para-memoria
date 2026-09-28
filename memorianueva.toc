@@ -9,7 +9,7 @@
 \contentsline {chapter}{\numberline {2}Introducción específica}{5}{chapter.2}%
 \contentsline {section}{\numberline {2.1}Ciclo de refrigeración por compresión de vapor}{5}{section.2.1}%
 \contentsline {section}{\numberline {2.2}Arquitectura de conectividad del N150}{6}{section.2.2}%
-\contentsline {section}{\numberline {2.3}Bluetooth Low Energy}{6}{section.2.3}%
+\contentsline {section}{\numberline {2.3}Bluetooth Low Energy}{7}{section.2.3}%
 \contentsline {subsection}{\numberline {2.3.1}Adecuación de BLE al N150}{7}{subsection.2.3.1}%
 \contentsline {subsection}{\numberline {2.3.2}Comunicación entre el teléfono y el controlador}{8}{subsection.2.3.2}%
 \contentsline {chapter}{\numberline {3}Diseño e implementación}{11}{chapter.3}%

@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.29 (MiKTeX 26.5) (preloaded format=pdflatex 2026.9.4)  10 SEP 2026 18:47
+This is pdfTeX, Version 3.141592653-2.6-1.40.29 (MiKTeX 26.5) (preloaded format=pdflatex 2026.9.4)  28 SEP 2026 10:48
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1159,14 +1159,14 @@ File: Figures/conexionN150.png Graphic file (type png)
 <use Figures/conexionN150.png>
 Package pdftex.def Info: Figures/conexionN150.png  used on input line 42.
 (pdftex.def)             Requested size: 389.80269pt x 199.3293pt.
-LaTeX Info: Redefining \. on input line 53.
-LaTeX Info: Redefining \% on input line 53.
+LaTeX Info: Redefining \. on input line 55.
+LaTeX Info: Redefining \% on input line 55.
  [6 <./Figures/cicloRefrigeracion.png (PNG copy)>]
-LaTeX Info: Redefining \. on input line 82.
-LaTeX Info: Redefining \% on input line 82.
+LaTeX Info: Redefining \. on input line 64.
+LaTeX Info: Redefining \% on input line 64.
  [7 <./Figures/conexionN150.png>]
-LaTeX Info: Redefining \. on input line 94.
-LaTeX Info: Redefining \% on input line 94.
+LaTeX Info: Redefining \. on input line 95.
+LaTeX Info: Redefining \% on input line 95.
  [8])
 LaTeX Info: Redefining \. on input line 117.
 LaTeX Info: Redefining \% on input line 117.
@@ -1261,10 +1261,10 @@ Package logreq Info: Writing requests to 'memorianueva.run.xml'.
 
  ) 
 Here is how much of TeX's memory you used:
- 31923 strings out of 467441
- 694392 string characters out of 5408564
- 1506722 words of memory out of 5000000
- 60751 multiletter control sequences out of 15000+600000
+ 31930 strings out of 467441
+ 694683 string characters out of 5408564
+ 1507247 words of memory out of 5000000
+ 60757 multiletter control sequences out of 15000+600000
  686642 words of font info for 106 fonts, out of 8000000 for 9000
  1142 hyphenation exceptions out of 8191
  96i,20n,95p,1971b,2169s stack positions out of 10000i,1000n,20000p,200000b,200000s
@@ -1278,9 +1278,9 @@ b8a.pfb><C:/Users/Gus/AppData/Local/Programs/MiKTeX/fonts/type1/urw/palatino/up
 lr8a.pfb><C:/Users/Gus/AppData/Local/Programs/MiKTeX/fonts/type1/urw/palatino/u
 plr8a.pfb><C:/Users/Gus/AppData/Local/Programs/MiKTeX/fonts/type1/urw/palatino/
 uplri8a.pfb>
-Output written on memorianueva.pdf (31 pages, 1269266 bytes).
+Output written on memorianueva.pdf (31 pages, 1271174 bytes).
 PDF statistics:
- 416 PDF objects out of 1000 (max. 8388607)
- 102 named destinations out of 1000 (max. 500000)
+ 421 PDF objects out of 1000 (max. 8388607)
+ 103 named destinations out of 1000 (max. 500000)
  184 words of extra memory for PDF output out of 10000 (max. 10000000)
 

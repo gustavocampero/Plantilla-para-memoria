@@ -208,6 +208,30 @@
     \field{urlyear}{2026}
   \endentry
 
+  \entry{ashrae:refrigeration2022}{book}{}{}
+    \name{author}{1}{}{%
+      {{hash=A}{%
+         family={{ASHRAE}},
+         familyi={A\bibinitperiod},
+      }}%
+    }
+    \list{publisher}{1}{%
+      {ASHRAE}%
+    }
+    \strng{namehash}{A2}
+    \strng{fullhash}{A2}
+    \field{labelnamesource}{author}
+    \field{labeltitlesource}{title}
+    \field{title}{ASHRAE Handbook: Refrigeration}
+    \verb{url}
+    \verb https://www.ashrae.org/technical-resources/ashrae-handbook
+    \endverb
+    \field{year}{2022}
+    \field{urlday}{10}
+    \field{urlmonth}{09}
+    \field{urlyear}{2026}
+  \endentry
+
   \entry{bluetooth:core53}{manual}{}{}
     \list{organization}{1}{%
       {{Bluetooth SIG}}%
@@ -231,10 +255,10 @@
     \field{labeltitlesource}{title}
     \field{title}{Bluetooth Low Energy -- ESP-IDF Programming Guide}
     \verb{url}
-    \verb https://docs.espressif.com/projects/esp-idf/en/v5.3.3/esp32/api-guide
+    \verb https://docs.espressif.com/projects/esp-idf/en/v5.3.4/esp32/api-guide
     \verb s/ble/index.html
     \endverb
-    \field{version}{5.3.3}
+    \field{version}{5.3.4}
     \field{year}{2025}
     \field{urlday}{10}
     \field{urlmonth}{09}

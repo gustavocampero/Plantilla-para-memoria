@@ -31,7 +31,7 @@ Esta estructura proporciona capacidades de telemetría, parametrización remota,
 
 La motivación del trabajo surgió de una limitación observada durante las tareas de configuración y soporte técnico del N150. Si bien la conectividad celular permitía atender las necesidades de telemetría y transmisión remota de datos, presentaba limitaciones para las tareas que requerían una interacción inmediata con el equipo. Entre estas tareas se encontraban la activación inicial, la modificación de parámetros, el diagnóstico técnico y la actualización de firmware.
 
-Ante esta situación, se identificó la necesidad de disponer de un mecanismo de comunicación local que permitiera efectuar dichas operaciones de forma directa, rápida y confiable, sin depender de la cobertura ni de la estabilidad de la red celular. Esta necesidad adquiría especial relevancia durante la instalación, la validación en planta y el soporte técnico en campo, debido a que la disponibilidad de un canal de acceso inmediato condicionaba la eficiencia de cada intervención.
+Ante esta situación, se identificó la necesidad de disponer de un mecanismo de comunicación local que permitiera efectuar dichas operaciones de forma directa, rápida y confiable, sin depender de la cobertura ni de la estabilidad de la red celular. Este acceso resultaba especialmente relevante durante la instalación, la validación en planta y el soporte técnico en campo, ya que la disponibilidad inmediata de un canal de comunicación condicionaba la eficiencia de cada intervención.
 
 La incorporación de un canal local también ofrecía una oportunidad de mejora operativa. Por este motivo, se desarrolló un sistema de comunicación basado en Bluetooth para interactuar con el controlador mediante un dispositivo móvil de uso común. El sistema tuvo como finalidad reducir la necesidad de herramientas específicas, simplificar las tareas de mantenimiento y ampliar las capacidades de soporte sobre los equipos instalados.
 
@@ -41,7 +41,7 @@ Desde el punto de vista formativo, el desarrollo permitió abordar un problema r
 
 \section{Estado del arte}
 
-Las soluciones conectadas aplicadas a la refrigeración comercial adoptan distintos enfoques según la conectividad empleada y las funciones disponibles. Algunas se concentran en la adquisición de variables y el monitoreo remoto, mientras que otras incorporan funciones de configuración, diagnóstico o control. Para analizar estos enfoques se consideraron soluciones comerciales y antecedentes académicos relacionados con la supervisión de equipos refrigerados y el acceso local a sistemas embebidos.
+Las soluciones conectadas aplicadas a la refrigeración comercial adoptan distintos enfoques según la conectividad empleada y las funciones disponibles. Algunas se concentran en la adquisición de variables y el monitoreo remoto, mientras que otras incorporan funciones de configuración, diagnóstico o control. Para analizar estos enfoques se consideraron soluciones comerciales relacionadas con la supervisión de equipos refrigerados y el acceso local a sistemas embebidos.
 
 Entre las soluciones comerciales orientadas al monitoreo se encuentran Swift Sensors \cite{SwiftSensors:web} y Monnit \cite{Monnit:web}. Ambas ofrecen sensores inalámbricos, plataformas de supervisión remota y generación de alertas. Swift Sensors utiliza Bluetooth entre los sensores y una puerta de enlace que transmite la información hacia una plataforma remota. Monnit dispone de sensores, puertas de enlace y herramientas de gestión para distintas variables ambientales y operativas. La documentación consultada de estas plataformas se concentra en la adquisición, el registro y la visualización de datos, pero no describe funciones de configuración profunda ni de actualización del software embebido del controlador refrigerado.
 
@@ -53,7 +53,7 @@ La tabla \ref{tab:comparacion_estado_arte} resume las características relevante
 
 \begin{table}[h]
 	\centering
-	\caption[Comparación de soluciones]{Comparación de las soluciones comerciales y académicas analizadas.}
+	\caption[Comparación de soluciones]{Comparación de las soluciones comerciales analizadas.}
 	\small
 	\begin{tabular}{p{2.3cm} p{2.6cm} p{3.8cm} p{3.2cm}}
 		\toprule

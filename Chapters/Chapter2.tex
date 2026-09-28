@@ -2,18 +2,18 @@
 
 \label{Chapter2}
 
-En este capítulo se presentan los conceptos técnicos que fundamentan el trabajo: el ciclo de refrigeración y la función del controlador, la arquitectura de conectividad del N150 y las características de BLE (del inglés, \textit{Bluetooth Low Energy}) \cite{bluetooth:core53} relevantes para implementar una interfaz local de comunicación.
+En este capítulo se presentan los conceptos técnicos que fundamentan el trabajo, entre ellos el ciclo de refrigeración y la función del controlador, su arquitectura de conectividad y las tecnologías de comunicación relevantes para implementar una interfaz local.
 
 %----------------------------------------------------------------------------------------
 
 \section{Ciclo de refrigeración por compresión de vapor}
 \label{sec:ciclo_refrigeracion}
 
-Para comprender el entorno de aplicación del controlador N150 y las tareas de soporte asociadas con su operación, resulta necesario introducir el principio de funcionamiento de los sistemas de refrigeración por compresión de vapor, tecnología ampliamente utilizada en heladeras comerciales.
+Para comprender el entorno de aplicación del controlador N150 y las tareas de soporte asociadas con su operación, resulta necesario introducir el principio de funcionamiento de los sistemas de refrigeración por compresión de vapor, tecnología ampliamente utilizada en heladeras comerciales \cite{ashrae:refrigeration2022}.
 
 El objetivo de estos sistemas es extraer calor del interior del gabinete refrigerado y disiparlo hacia el ambiente exterior, a fin de mantener una temperatura adecuada para la conservación de los productos almacenados. Para ello, el ciclo se basa en la circulación de un fluido refrigerante a través de un conjunto de componentes, cada uno con una función específica dentro del proceso térmico.
 
-El primer componente del ciclo es el compresor, encargado de aspirar el refrigerante en estado gaseoso y a baja presión desde la salida del evaporador, y comprimirlo hasta alcanzar valores elevados de presión y temperatura. A continuación, el fluido ingresa al condensador, donde cede calor al ambiente y se transforma en líquido a alta presión. Luego atraviesa un dispositivo de expansión, que reduce su presión y temperatura. Finalmente, el refrigerante ingresa al evaporador, donde absorbe calor del interior de la heladera y vuelve a evaporarse, con lo cual se completa el ciclo. Este proceso se representa en la figura \ref{fig:ciclo_refrigeracion}.
+El primer componente del ciclo es el compresor, encargado de aspirar el refrigerante en estado gaseoso y a baja presión desde la salida del evaporador, y comprimirlo hasta alcanzar valores elevados de presión y temperatura. A continuación, el fluido ingresa al condensador, donde cede calor al ambiente y se transforma en líquido a alta presión. Luego atraviesa un dispositivo de expansión, que reduce su presión y temperatura. Finalmente, el refrigerante ingresa al evaporador, donde absorbe calor del interior de la heladera y vuelve a evaporarse, completando el ciclo. Este proceso se representa en la figura \ref{fig:ciclo_refrigeracion}.
 
 \begin{figure}[htbp]
 	\centering
@@ -31,11 +31,11 @@ En el caso particular del N150, el controlador interviene en la lógica de regul
 \section{Arquitectura de conectividad del N150}
 \label{sec:arquitectura_conectividad}
 
-La arquitectura del N150 distribuye sus funciones entre componentes especializados. El PIC24FJ64GU205T ejecuta la lógica de control del sistema de refrigeración, mientras que el ESP32 administra las comunicaciones y vincula el sistema de control con las interfaces local y remota. Esta separación evita que las tareas de conectividad interfieran con las funciones de regulación y permite modificar los mecanismos de comunicación sin alterar la lógica principal del equipo.
+La arquitectura del N150 separa las funciones de regulación del sistema de refrigeración de las funciones de conectividad. El subsistema de control intercambia información con el ESP32, que concentra las comunicaciones y vincula el funcionamiento interno del equipo con las interfaces local y remota. Esta organización evita que las tareas de conectividad interfieran con las funciones de regulación y permite modificar los mecanismos de comunicación sin alterar la lógica principal del equipo.
 
 La comunicación remota se realiza mediante un módem celular Quectel BG95, controlado por el ESP32 a través de una interfaz serie y comandos AT. Esta interacción permite inicializar el módulo, verificar el estado de la tarjeta SIM, registrar el equipo en la red, establecer la conexión de datos y transmitir información hacia la infraestructura de Sensify. La disponibilidad del enlace depende de la cobertura de las redes celulares admitidas por la variante del módem instalada.
 
-Para el acceso local se utiliza la interfaz BLE integrada en el ESP32 y gestionada mediante ESP-IDF 5.3.3. Este canal permite que un teléfono se comunique directamente con el controlador sin utilizar el módem celular ni una red del establecimiento. La figura \ref{fig:conexion_N150} presenta la relación entre los componentes y los canales de comunicación del N150.
+La figura \ref{fig:conexion_N150} presenta la relación entre los subsistemas y los canales de comunicación del N150.
 
 \begin{figure}[htbp]
 	\centering
@@ -44,19 +44,23 @@ Para el acceso local se utiliza la interfaz BLE integrada en el ESP32 y gestiona
 	\label{fig:conexion_N150}
 \end{figure}
 
+Para el acceso local se utiliza la interfaz BLE integrada en el ESP32 y gestionada mediante ESP-IDF 5.3.4. Este canal permite que un teléfono se comunique directamente con el controlador sin utilizar el módem celular ni una red del establecimiento.
+
 %----------------------------------------------------------------------------------------
 
 \section{Bluetooth Low Energy}
 \label{sec:ble}
 
-BLE es una tecnología inalámbrica de corto alcance orientada al intercambio eficiente de cantidades moderadas de datos. Su especificación define, entre otros elementos, los procedimientos de descubrimiento y conexión, los roles de los dispositivos y el modelo utilizado para organizar la información intercambiada. La documentación de ESP-IDF 5.3.3 describe el soporte provisto por el ESP32 para implementar estos mecanismos \cite{espressif:esp-idf-ble}. Para este trabajo no resultan relevantes todas las capas del protocolo, sino aquellas que permiten establecer una comunicación directa y segura entre el N150 y un teléfono.
+BLE, sigla de \textit{Bluetooth Low Energy}, es una tecnología inalámbrica de corto alcance orientada al intercambio eficiente de cantidades moderadas de datos \cite{bluetooth:core53}. Su especificación define, entre otros elementos, los procedimientos de descubrimiento y conexión, los roles de los dispositivos y el modelo utilizado para organizar la información intercambiada. La documentación de ESP-IDF 5.3.4 describe el soporte provisto por el ESP32 para implementar estos mecanismos \cite{espressif:esp-idf-ble}. Para este trabajo no resultan relevantes todas las capas del protocolo, sino aquellas que permiten establecer una comunicación directa y segura entre el N150 y un teléfono.
 
 \subsection{Adecuación de BLE al N150}
 \label{subsec:seleccion_ble}
 
-Para el desarrollo se requería un canal local que permitiera configurar el controlador, consultar información de diagnóstico y actualizar su firmware aun cuando la heladera estuviera instalada en un sitio sin cobertura celular. También debía posibilitar el uso de un teléfono como herramienta de soporte, sin incorporar hardware adicional al N150. BLE satisface estos requerimientos porque se encuentra integrado en el ESP32, dispone de soporte en dispositivos móviles y permite descubrir y conectar equipos cercanos sin depender de una infraestructura de red externa.
+Para el desarrollo se requería un canal local que permitiera configurar el controlador, consultar información de diagnóstico y actualizar su firmware aun cuando la heladera estuviera instalada en un sitio sin cobertura celular. También, debía posibilitar el uso de un teléfono como herramienta de soporte, sin incorporar hardware adicional al N150. BLE satisface estos requerimientos porque se encuentra integrado en el ESP32, dispone de soporte en dispositivos móviles y permite descubrir y conectar equipos cercanos sin depender de una infraestructura de red externa.
 
 El alcance acotado de BLE también resulta coherente con las tareas de intervención local, en las que el operador se encuentra próximo a la heladera. El caudal disponible es suficiente para intercambiar parámetros, estados, registros de diagnóstico y bloques de una actualización de firmware. Además, su modelo de servicios y características permite organizar esas operaciones mediante una interfaz común para el controlador y la aplicación móvil.
+
+Frente a la conectividad celular, BLE proporciona acceso cuando no existe cobertura o cuando el enlace remoto no se encuentra disponible. A diferencia de Wi-Fi, no requiere que el controlador se incorpore a una red local ni que se conozcan sus credenciales. Por otra parte, ofrece una sesión de comunicación y un modelo de datos más apropiados para las tareas previstas que una interfaz de proximidad basada en NFC. Bluetooth Classic proporciona un caudal mayor, pero ese beneficio no resulta necesario para el volumen de información de esta aplicación. Por estos motivos, se seleccionó BLE como interfaz local del N150.
 
 La tabla \ref{tab:requerimientos_ble} relaciona las necesidades principales de la interfaz local con las características de BLE aprovechadas en el desarrollo. Esta correspondencia permite justificar la selección a partir de los requerimientos del sistema y no solo de las propiedades generales de la tecnología.
 
@@ -77,8 +81,6 @@ La tabla \ref{tab:requerimientos_ble} relaciona las necesidades principales de l
 	\end{tabular}
 	\label{tab:requerimientos_ble}
 \end{table}
-
-Frente a la conectividad celular, BLE proporciona acceso cuando no existe cobertura o cuando el enlace remoto no se encuentra disponible. A diferencia de Wi-Fi, no requiere que el controlador se incorpore a una red local ni que se conozcan sus credenciales. Por otra parte, ofrece una sesión de comunicación y un modelo de datos más apropiados para las tareas previstas que una interfaz de proximidad basada en NFC. Bluetooth Classic proporciona un caudal mayor, pero ese beneficio no resulta necesario para el volumen de información de esta aplicación. Por estos motivos, se seleccionó BLE como interfaz local del N150.
 
 \subsection{Comunicación entre el teléfono y el controlador}
 \label{subsec:comunicacion_ble}
