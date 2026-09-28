@@ -1,184 +1,96 @@
-\chapter{Introducción específica} % Main chapter title
+\chapter{Introducción específica}
 
 \label{Chapter2}
 
+En este capítulo se presentan los conceptos técnicos que fundamentan el trabajo: el ciclo de refrigeración y la función del controlador, la arquitectura de conectividad del N150 y las características de BLE (del inglés, \textit{Bluetooth Low Energy}) \cite{bluetooth:core53} relevantes para implementar una interfaz local de comunicación.
+
 %----------------------------------------------------------------------------------------
-%	SECTION 1
+
+\section{Ciclo de refrigeración por compresión de vapor}
+\label{sec:ciclo_refrigeracion}
+
+Para comprender el entorno de aplicación del controlador N150 y las tareas de soporte asociadas con su operación, resulta necesario introducir el principio de funcionamiento de los sistemas de refrigeración por compresión de vapor, tecnología ampliamente utilizada en heladeras comerciales.
+
+El objetivo de estos sistemas es extraer calor del interior del gabinete refrigerado y disiparlo hacia el ambiente exterior, a fin de mantener una temperatura adecuada para la conservación de los productos almacenados. Para ello, el ciclo se basa en la circulación de un fluido refrigerante a través de un conjunto de componentes, cada uno con una función específica dentro del proceso térmico.
+
+El primer componente del ciclo es el compresor, encargado de aspirar el refrigerante en estado gaseoso y a baja presión desde la salida del evaporador, y comprimirlo hasta alcanzar valores elevados de presión y temperatura. A continuación, el fluido ingresa al condensador, donde cede calor al ambiente y se transforma en líquido a alta presión. Luego atraviesa un dispositivo de expansión, que reduce su presión y temperatura. Finalmente, el refrigerante ingresa al evaporador, donde absorbe calor del interior de la heladera y vuelve a evaporarse, con lo cual se completa el ciclo. Este proceso se representa en la figura \ref{fig:ciclo_refrigeracion}.
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[width=\textwidth]{Figures/cicloRefrigeracion.png}
+	\caption[Ciclo de refrigeración]{Esquema del ciclo de refrigeración: compresor, condensador, dispositivo de expansión y evaporador.}
+	\label{fig:ciclo_refrigeracion}
+\end{figure}
+
+Desde el punto de vista funcional, el desempeño del sistema depende no solo del estado operativo de sus componentes, sino también de la supervisión adecuada de variables como la temperatura, los tiempos de funcionamiento, el estado de los sensores, las maniobras de descongelamiento y la activación de los actuadores. En aplicaciones comerciales, esta supervisión resulta fundamental para garantizar la conservación de los productos, optimizar el consumo energético y detectar fallas de manera temprana.
+
+En el caso particular del N150, el controlador interviene en la lógica de regulación del ciclo de refrigeración y centraliza funciones de supervisión, almacenamiento de eventos, parametrización operativa y conectividad. De este modo, el dispositivo actúa como nexo entre el comportamiento físico del sistema de refrigeración y las funciones de monitoreo, diagnóstico y soporte construidas sobre él.
+
 %----------------------------------------------------------------------------------------
-Todos los capítulos deben comenzar con un breve párrafo introductorio que indique cuál es el contenido que se encontrará al leerlo.  La redacción sobre el contenido de la memoria debe hacerse en presente y todo lo referido al proyecto en pasado, siempre de modo impersonal.
 
-\section{Estilo y convenciones}
-\label{sec:ejemplo}
+\section{Arquitectura de conectividad del N150}
+\label{sec:arquitectura_conectividad}
 
-\subsection{Uso de mayúscula inicial para los título de secciones}
+La arquitectura del N150 distribuye sus funciones entre componentes especializados. El PIC24FJ64GU205T ejecuta la lógica de control del sistema de refrigeración, mientras que el ESP32 administra las comunicaciones y vincula el sistema de control con las interfaces local y remota. Esta separación evita que las tareas de conectividad interfieran con las funciones de regulación y permite modificar los mecanismos de comunicación sin alterar la lógica principal del equipo.
 
-Si en el texto se hace alusión a diferentes partes del trabajo referirse a ellas como capítulo, sección o subsección según corresponda. Por ejemplo: ``En el capítulo \ref{Chapter1} se explica tal cosa'', o ``En la sección \ref{sec:ejemplo} se presenta lo que sea'', o ``En la subsección \ref{subsec:ejemplo} se discute otra cosa''.
+La comunicación remota se realiza mediante un módem celular Quectel BG95, controlado por el ESP32 a través de una interfaz serie y comandos AT. Esta interacción permite inicializar el módulo, verificar el estado de la tarjeta SIM, registrar el equipo en la red, establecer la conexión de datos y transmitir información hacia la infraestructura de Sensify. La disponibilidad del enlace depende de la cobertura de las redes celulares admitidas por la variante del módem instalada.
 
-Cuando se quiere poner una lista tabulada, se hace así:
+Para el acceso local se utiliza la interfaz BLE integrada en el ESP32 y gestionada mediante ESP-IDF 5.3.3. Este canal permite que un teléfono se comunique directamente con el controlador sin utilizar el módem celular ni una red del establecimiento. La figura \ref{fig:conexion_N150} presenta la relación entre los componentes y los canales de comunicación del N150.
 
-\begin{itemize}
-	\item Este es el primer elemento de la lista.
-	\item Este es el segundo elemento de la lista.
-\end{itemize}
-
-Notar el uso de las mayúsculas y el punto al final de cada elemento.
-
-Si se desea poner una lista numerada el formato es este:
-
-\begin{enumerate}
-	\item Este es el primer elemento de la lista.
-	\item Este es el segundo elemento de la lista.
-\end{enumerate}
-
-Notar el uso de las mayúsculas y el punto al final de cada elemento.
-
-\subsection{Este es el título de una subsección}
-\label{subsec:ejemplo}
-
-Se recomienda no utilizar \textbf{texto en negritas} en ningún párrafo, ni tampoco texto \underline{subrayado}. En cambio sí se debe utilizar \textit{texto en itálicas} para palabras en un idioma extranjero, al menos la primera vez que aparecen en el texto. En el caso de palabras que estamos inventando se deben utilizar ``comillas'', así como también para citas textuales. Por ejemplo, un \textit{digital filter} es una especie de ``selector'' que permite separar ciertos componentes armónicos en particular.
-
-La escritura debe ser impersonal. Por ejemplo, no utilizar ``el diseño del firmware lo hice de acuerdo con tal principio'', sino ``el firmware fue diseñado utilizando tal principio''. 
-
-El trabajo es algo que al momento de escribir la memoria se supone que ya está concluido, entonces todo lo que se refiera a hacer el trabajo se narra en tiempo pasado, porque es algo que ya ocurrió. Por ejemplo, "se diseñó el firmware empleando la técnica de test driven development".
-
-En cambio, la memoria es algo que está vivo cada vez que el lector la lee. Por eso transcurre siempre en tiempo presente, como por ejemplo:
-
-``En el presente capítulo se da una visión global sobre las distintas pruebas realizadas y los resultados obtenidos. Se explica el modo en que fueron llevados a cabo los test unitarios y las pruebas del sistema''.
-
-Se recomienda no utilizar una sección de glosario sino colocar la descripción de las abreviaturas como parte del mismo cuerpo del texto. Por ejemplo, RTOS (\textit{Real Time Operating System}, Sistema Operativo de Tiempo Real) o en caso de considerarlo apropiado mediante notas a pie de página.
-
-Si se desea indicar alguna página web utilizar el siguiente formato de referencias bibliográficas, dónde las referencias se detallan en la sección de bibliografía de la memoria, utilizado el formato establecido por IEEE en \citep{IEEE:citation}. Por ejemplo, ``el presente trabajo se basa en la plataforma EDU-CIAA-NXP \citep{CIAA}, la cual...''.
-
-\subsection{Figuras} 
-
-Al insertar figuras en la memoria se deben considerar determinadas pautas. Para empezar, usar siempre tipografía claramente legible. Luego, tener claro que \textbf{es incorrecto} escribir por ejemplo esto: ``El diseño elegido es un cuadrado, como se ve en la siguiente figura:''
-
-\begin{figure}[h]
-\centering
-\includegraphics[scale=.45]{./Figures/cuadradoAzul.png}
-\end{figure}
-
-La forma correcta de utilizar una figura es con referencias cruzadas, por ejemplo: ``Se eligió utilizar un cuadrado azul para el logo, como puede observarse en la figura \ref{fig:cuadradoAzul}''.
-
-\begin{figure}[ht]
+\begin{figure}[htbp]
 	\centering
-	\includegraphics[scale=.45]{./Figures/cuadradoAzul.png}
-	\caption{Ilustración del cuadrado azul que se eligió para el diseño del logo.}
-	\label{fig:cuadradoAzul}
+	\includegraphics[width=\textwidth]{Figures/conexionN150.png}
+	\caption[Arquitectura de conectividad del N150]{Arquitectura de conectividad del controlador N150.}
+	\label{fig:conexion_N150}
 \end{figure}
 
-El texto de las figuras debe estar siempre en español, excepto que se decida reproducir una figura original tomada de alguna referencia. En ese caso la referencia de la cual se tomó la figura debe ser indicada en el epígrafe de la figura e incluida como una nota al pie, como se ilustra en la figura \ref{fig:palabraIngles}.
+%----------------------------------------------------------------------------------------
 
-\begin{figure}[htpb]
+\section{Bluetooth Low Energy}
+\label{sec:ble}
+
+BLE es una tecnología inalámbrica de corto alcance orientada al intercambio eficiente de cantidades moderadas de datos. Su especificación define, entre otros elementos, los procedimientos de descubrimiento y conexión, los roles de los dispositivos y el modelo utilizado para organizar la información intercambiada. La documentación de ESP-IDF 5.3.3 describe el soporte provisto por el ESP32 para implementar estos mecanismos \cite{espressif:esp-idf-ble}. Para este trabajo no resultan relevantes todas las capas del protocolo, sino aquellas que permiten establecer una comunicación directa y segura entre el N150 y un teléfono.
+
+\subsection{Adecuación de BLE al N150}
+\label{subsec:seleccion_ble}
+
+Para el desarrollo se requería un canal local que permitiera configurar el controlador, consultar información de diagnóstico y actualizar su firmware aun cuando la heladera estuviera instalada en un sitio sin cobertura celular. También debía posibilitar el uso de un teléfono como herramienta de soporte, sin incorporar hardware adicional al N150. BLE satisface estos requerimientos porque se encuentra integrado en el ESP32, dispone de soporte en dispositivos móviles y permite descubrir y conectar equipos cercanos sin depender de una infraestructura de red externa.
+
+El alcance acotado de BLE también resulta coherente con las tareas de intervención local, en las que el operador se encuentra próximo a la heladera. El caudal disponible es suficiente para intercambiar parámetros, estados, registros de diagnóstico y bloques de una actualización de firmware. Además, su modelo de servicios y características permite organizar esas operaciones mediante una interfaz común para el controlador y la aplicación móvil.
+
+La tabla \ref{tab:requerimientos_ble} relaciona las necesidades principales de la interfaz local con las características de BLE aprovechadas en el desarrollo. Esta correspondencia permite justificar la selección a partir de los requerimientos del sistema y no solo de las propiedades generales de la tecnología.
+
+\begin{table}[htbp]
 	\centering
-	\includegraphics[scale=.3]{./Figures/word.jpeg}
-	\caption{Imagen tomada de la página oficial del procesador\protect\footnotemark.}
-	\label{fig:palabraIngles}
-\end{figure}
-
-\footnotetext{Imagen tomada de \url{https://goo.gl/images/i7C70w}}
-
-La figura y el epígrafe deben conformar una unidad cuyo significado principal pueda ser comprendido por el lector sin necesidad de leer el cuerpo central de la memoria. Para eso es necesario que el epígrafe sea todo lo detallado que corresponda y si en la figura se utilizan abreviaturas entonces aclarar su significado en el epígrafe o en la misma figura.
-
-
-
-\begin{figure}[ht]
-	\centering
-	\includegraphics[scale=.37]{./Figures/questionMark.png}
-	\caption{¿Por qué de pronto aparece esta figura?}
-	\label{fig:questionMark}
-\end{figure}
-
-Nunca colocar una figura en el documento antes de hacer la primera referencia a ella, como se ilustra con la figura \ref{fig:questionMark}, porque sino el lector no comprenderá por qué de pronto aparece la figura en el documento, lo que distraerá su atención.
-
-Otra posibilidad es utilizar el entorno \textit{subfigure} para incluir más de una figura, como se puede ver en la figura \ref{fig:three graphs}. Notar que se pueden referenciar también las figuras internas individualmente de esta manera: \ref{fig:1de3}, \ref{fig:2de3} y \ref{fig:3de3}.
- 
-\begin{figure}[!htpb]
-     \centering
-     \begin{subfigure}[b]{0.3\textwidth}
-         \centering
-         \includegraphics[width=.65\textwidth]{./Figures/questionMark}
-         \caption{Un caption.}
-         \label{fig:1de3}
-     \end{subfigure}
-     \hfill
-     \begin{subfigure}[b]{0.3\textwidth}
-         \centering
-         \includegraphics[width=.65\textwidth]{./Figures/questionMark}
-         \caption{Otro.}
-         \label{fig:2de3}
-     \end{subfigure}
-     \hfill
-     \begin{subfigure}[b]{0.3\textwidth}
-         \centering
-         \includegraphics[width=.65\textwidth]{./Figures/questionMark}
-         \caption{Y otro más.}
-         \label{fig:3de3}
-     \end{subfigure}
-        \caption{Tres gráficos simples.}
-        \label{fig:three graphs}
-\end{figure}
-
-El código para generar las imágenes se encuentra disponible para su reutilización en el archivo \file{Chapter2.tex}.
-
-\subsection{Tablas}
-
-Para las tablas utilizar el mismo formato que para las figuras, sólo que el epígrafe se debe colocar arriba de la tabla, como se ilustra en la tabla \ref{tab:peces}. Observar que sólo algunas filas van con líneas visibles y notar el uso de las negritas para los encabezados.  La referencia se logra utilizando el comando \verb|\ref{<label>}| donde label debe estar definida dentro del entorno de la tabla.
-
-\begin{verbatim}
-\begin{table}[h]
-	\centering
-	\caption[caption corto]{caption largo más descriptivo}
-	\begin{tabular}{l c c}    
+	\caption{Relación entre los requerimientos de la interfaz local y las características de BLE.}
+	\begin{tabular}{p{0.34\textwidth} p{0.56\textwidth}}
 		\toprule
-		\textbf{Especie}     & \textbf{Tamaño} & \textbf{Valor}\\
+		\textbf{Requerimiento} & \textbf{Característica utilizada} \\
 		\midrule
-		Amphiprion Ocellaris & 10 cm           & \$ 6.000 \\		
-		Hepatus Blue Tang    & 15 cm           & \$ 7.000 \\
-		Zebrasoma Xanthurus  & 12 cm           & \$ 6.800 \\
+		Operación sin cobertura celular & Enlace directo entre el teléfono y el N150, independiente de servicios externos. \\
+		Uso de un teléfono como herramienta & Compatibilidad de BLE con dispositivos móviles y mecanismos de descubrimiento de equipos próximos. \\
+		Ausencia de hardware adicional & Interfaz de radio integrada en el ESP32 del controlador. \\
+		Configuración y diagnóstico & Organización de datos y operaciones mediante servicios y características GATT. \\
+		Actualización de firmware & Transferencia bidireccional de bloques de datos durante una conexión establecida. \\
+		Control de acceso & Emparejamiento, autenticación y cifrado del enlace. \\
 		\bottomrule
-		\hline
 	\end{tabular}
-	\label{tab:peces}
-\end{table}
-\end{verbatim}
-
-
-\begin{table}[h]
-	\centering
-	\caption[caption corto]{caption largo más descriptivo.}
-	\begin{tabular}{l c c}    
-		\toprule
-		\textbf{Especie} 	 & \textbf{Tamaño} 		& \textbf{Valor}  \\
-		\midrule
-		Amphiprion Ocellaris & 10 cm 				& \$ 6.000 \\		
-		Hepatus Blue Tang	 & 15 cm				& \$ 7.000 \\
-		Zebrasoma Xanthurus	 & 12 cm				& \$ 6.800 \\
-		\bottomrule
-		\hline
-	\end{tabular}
-	\label{tab:peces}
+	\label{tab:requerimientos_ble}
 \end{table}
 
-En cada capítulo se debe reiniciar el número de conteo de las figuras y las tablas, por ejemplo, figura 2.1 o tabla 2.1, pero no se debe reiniciar el conteo en cada sección. Por suerte la plantilla se encarga de esto por nosotros.
+Frente a la conectividad celular, BLE proporciona acceso cuando no existe cobertura o cuando el enlace remoto no se encuentra disponible. A diferencia de Wi-Fi, no requiere que el controlador se incorpore a una red local ni que se conozcan sus credenciales. Por otra parte, ofrece una sesión de comunicación y un modelo de datos más apropiados para las tareas previstas que una interfaz de proximidad basada en NFC. Bluetooth Classic proporciona un caudal mayor, pero ese beneficio no resulta necesario para el volumen de información de esta aplicación. Por estos motivos, se seleccionó BLE como interfaz local del N150.
 
-\subsection{Ecuaciones}
-\label{sec:Ecuaciones}
+\subsection{Comunicación entre el teléfono y el controlador}
+\label{subsec:comunicacion_ble}
 
-Al insertar ecuaciones en la memoria dentro de un entorno \textit{equation}, éstas se numeran en forma automática  y se pueden referir al igual que como se hace con las figuras y tablas, por ejemplo ver la ecuación \ref{eq:metric}.
+La comunicación comienza con la emisión periódica de paquetes de publicidad por parte del N150. El teléfono explora los dispositivos cercanos, identifica el controlador y solicita el establecimiento de una conexión, de acuerdo con el flujo previsto por la plataforma para el descubrimiento y la conexión BLE \cite{espressif:esp-idf-ble}. En este esquema, el N150 funciona como periférico y el teléfono como central. La publicidad permite iniciar la comunicación sin conocer previamente la dirección del dispositivo y limita la búsqueda al entorno próximo del operador.
 
-\begin{equation}
-	\label{eq:metric}
-	ds^2 = c^2 dt^2 \left( \frac{d\sigma^2}{1-k\sigma^2} + \sigma^2\left[ d\theta^2 + \sin^2\theta d\phi^2 \right] \right)
-\end{equation}
-                                                        
-Para generar la ecuación \ref{eq:metric} se utilizó el siguiente código:
+La sesión de soporte local se divide en tres etapas. En la primera, la aplicación identifica el N150 mediante la información incluida en sus paquetes de publicidad. En la segunda, ambos dispositivos establecen la conexión y aplican los mecanismos de seguridad previstos para verificar el acceso. En la tercera, la aplicación descubre la interfaz GATT y ejecuta la operación solicitada. Esta secuencia se utiliza tanto para intervenciones breves, como la consulta de un estado, como para operaciones prolongadas, entre ellas la transferencia de una actualización de firmware.
 
-\begin{verbatim}
-\begin{equation}
-	\label{eq:metric}
-	ds^2 = c^2 dt^2 \left( \frac{d\sigma^2}{1-k\sigma^2} + 
-	\sigma^2\left[ d\theta^2 + 
-	\sin^2\theta d\phi^2 \right] \right)
-\end{equation}
-\end{verbatim}
+Una vez establecida la conexión, los datos se intercambian mediante GATT (del inglés, \textit{Generic Attribute Profile}). El N150 funciona como servidor GATT y expone la información y las operaciones disponibles mediante servicios y características. El teléfono funciona como cliente GATT, descubre esa estructura y accede a ella de acuerdo con los permisos definidos.
+
+Los roles de conexión y los roles GATT describen aspectos diferentes y complementarios. La condición de periférico establece la participación del N150 en el descubrimiento y en la conexión BLE, mientras que la condición de servidor determina que conserva y expone los atributos. De manera análoga, el teléfono actúa como central porque inicia la conexión y como cliente porque solicita operaciones sobre los atributos publicados por el controlador.
+
+La interfaz implementada utiliza las cuatro operaciones de acceso requeridas por el sistema: lectura, escritura, notificación e indicación. Las lecturas permiten que el teléfono solicite valores al controlador y las escrituras permiten enviarle datos o comandos. Las notificaciones y las indicaciones posibilitan que el N150 informe cambios o resultados sin esperar una consulta periódica; las indicaciones, a diferencia de las notificaciones, requieren confirmación de recepción. Estas operaciones sustentan las funciones de parametrización, diagnóstico y actualización de firmware desarrolladas para la aplicación móvil.
+
+Debido a que la interfaz permite modificar la configuración y el firmware del controlador, el acceso no puede depender únicamente de la proximidad física. Por este motivo, la comunicación incorpora mecanismos de emparejamiento, autenticación y cifrado del enlace. De esta manera, BLE proporciona tanto el canal local requerido para las tareas de soporte como los mecanismos necesarios para restringir el acceso a las funciones del N150.

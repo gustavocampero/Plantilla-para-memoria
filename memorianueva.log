@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.29 (MiKTeX 26.5) (preloaded format=pdflatex 2026.9.4)  4 SEP 2026 17:04
+This is pdfTeX, Version 3.141592653-2.6-1.40.29 (MiKTeX 26.5) (preloaded format=pdflatex 2026.9.4)  10 SEP 2026 18:47
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1053,31 +1053,25 @@ LaTeX Info: Redefining \% on input line 1.
  (Chapters/Chapter1.tex
 Cap\'{\i }tulo 1.
 
-Overfull \hbox (36.29376pt too wide) in paragraph at lines 24--25
-\T1/ppl/m/n/10.95 dis-tin-tos com-po-nen-tes es-pe-cia-li-za-dos. In-cor-po-ra 
-un mi-cro-con-tro-la-dor PIC24FJ64GU205T
- []
-
-
 pdfTeX warning (ext4): destination with the same identifier (name{page.1}) has 
 been already used, duplicate ignored
 <to be read again> 
                    \relax 
-l.25 
+l.27 
       [1
 
 
 ]
-LaTeX Info: Redefining \. on input line 47.
-LaTeX Info: Redefining \% on input line 47.
+LaTeX Info: Redefining \. on input line 49.
+LaTeX Info: Redefining \% on input line 49.
 Package babel Info: 'spanish' activates 'spanish' shorthands.
-(babel)             Reported on input line 47.
+(babel)             Reported on input line 49.
 
 pdfTeX warning (ext4): destination with the same identifier (name{page.2}) has 
 been already used, duplicate ignored
 <to be read again> 
                    \relax 
-l.47 
+l.49 
       [2]
 LaTeX Font Info:    External font `cmex10' loaded for size
 (Font)              <7> on input line 58.
@@ -1148,63 +1142,43 @@ LaTeX Info: Redefining \% on input line 116.
 
  (Chapters/Chapter2.tex
 Cap\'{\i }tulo 2.
+<Figures/cicloRefrigeracion.png, id=235, 1505.625pt x 1052.93375pt>
+File: Figures/cicloRefrigeracion.png Graphic file (type png)
+<use Figures/cicloRefrigeracion.png>
+Package pdftex.def Info: Figures/cicloRefrigeracion.png  used on input line 20.
+
+(pdftex.def)             Requested size: 389.80269pt x 272.59953pt.
 [5
 
 
 
 
 ]
-<./Figures/cuadradoAzul.png, id=251, 180.675pt x 180.675pt>
-File: ./Figures/cuadradoAzul.png Graphic file (type png)
-<use ./Figures/cuadradoAzul.png>
-Package pdftex.def Info: ./Figures/cuadradoAzul.png  used on input line 58.
-(pdftex.def)             Requested size: 81.303pt x 81.303pt.
-File: ./Figures/cuadradoAzul.png Graphic file (type png)
-<use ./Figures/cuadradoAzul.png>
-Package pdftex.def Info: ./Figures/cuadradoAzul.png  used on input line 65.
-(pdftex.def)             Requested size: 81.303pt x 81.303pt.
-<./Figures/word.jpeg, id=254, 259.97125pt x 194.7275pt>
-File: ./Figures/word.jpeg Graphic file (type jpg)
-<use ./Figures/word.jpeg>
-Package pdftex.def Info: ./Figures/word.jpeg  used on input line 74.
-(pdftex.def)             Requested size: 77.99197pt x 58.41869pt.
-LaTeX Font Info:    External font `cmex10' loaded for size
-(Font)              <9> on input line 79.
-LaTeX Info: Redefining \. on input line 81.
-LaTeX Info: Redefining \% on input line 81.
- [6 <./Figures/cuadradoAzul.png>]
-<./Figures/questionMark.png, id=265, 225.84375pt x 225.84375pt>
-File: ./Figures/questionMark.png Graphic file (type png)
-<use ./Figures/questionMark.png>
-Package pdftex.def Info: ./Figures/questionMark.png  used on input line 87.
-(pdftex.def)             Requested size: 83.56087pt x 83.56087pt.
-File: ./Figures/questionMark.png Graphic file (type png)
-<use ./Figures/questionMark.png>
-Package pdftex.def Info: ./Figures/questionMark.png  used on input line 100.
-(pdftex.def)             Requested size: 76.01157pt x 76.01392pt.
-File: ./Figures/questionMark.png Graphic file (type png)
-<use ./Figures/questionMark.png>
-Package pdftex.def Info: ./Figures/questionMark.png  used on input line 107.
-(pdftex.def)             Requested size: 76.01157pt x 76.01392pt.
-File: ./Figures/questionMark.png Graphic file (type png)
-<use ./Figures/questionMark.png>
-Package pdftex.def Info: ./Figures/questionMark.png  used on input line 114.
-(pdftex.def)             Requested size: 76.01157pt x 76.01392pt.
-LaTeX Font Info:    Trying to load font information for T1+pcr on input line 12
-6.
-
-(C:\Users\Gus\AppData\Local\Programs\MiKTeX\tex/latex/psnfss\t1pcr.fd
-File: t1pcr.fd 2001/06/04 font definitions for T1/pcr.
-)
-LaTeX Info: Redefining \. on input line 144.
-LaTeX Info: Redefining \% on input line 144.
- [7 <./Figures/word.jpeg> <./Figures/questionMark.png>])
+<Figures/conexionN150.png, id=243, 575.14874pt x 294.09875pt>
+File: Figures/conexionN150.png Graphic file (type png)
+<use Figures/conexionN150.png>
+Package pdftex.def Info: Figures/conexionN150.png  used on input line 42.
+(pdftex.def)             Requested size: 389.80269pt x 199.3293pt.
+LaTeX Info: Redefining \. on input line 53.
+LaTeX Info: Redefining \% on input line 53.
+ [6 <./Figures/cicloRefrigeracion.png (PNG copy)>]
+LaTeX Info: Redefining \. on input line 82.
+LaTeX Info: Redefining \% on input line 82.
+ [7 <./Figures/conexionN150.png>]
+LaTeX Info: Redefining \. on input line 94.
+LaTeX Info: Redefining \% on input line 94.
+ [8])
 LaTeX Info: Redefining \. on input line 117.
 LaTeX Info: Redefining \% on input line 117.
- [8]
+ [9]
 \openout2 = `Chapters/Chapter3.aux'.
 
- (Chapters/Chapter3.tex
+ (Chapters/Chapter3.tex [10
+
+
+
+
+]
 Cap\'{\i }tulo 3.
 (C:\Users\Gus\AppData\Local\Programs\MiKTeX\tex/latex/listings\lstlang1.sty
 File: lstlang1.sty 2025/11/14 1.11b listings language file
@@ -1212,23 +1186,24 @@ File: lstlang1.sty 2025/11/14 1.11b listings language file
 (C:\Users\Gus\AppData\Local\Programs\MiKTeX\tex/latex/listings\lstmisc.sty
 File: lstmisc.sty 2025/11/14 1.11b (Carsten Heinz)
 )
+LaTeX Font Info:    Trying to load font information for T1+pcr on input line 53
+.
+
+(C:\Users\Gus\AppData\Local\Programs\MiKTeX\tex/latex/psnfss\t1pcr.fd
+File: t1pcr.fd 2001/06/04 font definitions for T1/pcr.
+)
 Package hyperref Info: bookmark level for unknown lstlisting defaults to 0 on i
 nput line 62.
-
-[9
-
-
-
-
-])
+ [11])
 LaTeX Info: Redefining \. on input line 118.
 LaTeX Info: Redefining \% on input line 118.
- [10]
+
+[12]
 \openout2 = `Chapters/Chapter4.aux'.
 
  (Chapters/Chapter4.tex
 Cap\'{\i }tulo 4.
-) [11
+) [13
 
 
 
@@ -1236,14 +1211,14 @@ Cap\'{\i }tulo 4.
 ]
 \openout2 = `Chapters/Chapter5.aux'.
 
- (Chapters/Chapter5.tex [12
+ (Chapters/Chapter5.tex [14
 
 
 
 
 ]
 Cap\'{\i }tulo 5.
-) [13] [14
+) [15] [16
 
 
 
@@ -1260,7 +1235,7 @@ to-ring\T1/ppl/m/n/10.95 . 2026. \T1/ppl/m/sc/10.95 url\T1/ppl/m/n/10.95 : [][]
 $https : / / www . swiftsensors .
  []
 
-[15] (memorianueva.aux (portada.aux)
+[17] (memorianueva.aux (portada.aux)
 LaTeX Info: Redefining \. on input line 16.
 LaTeX Info: Redefining \% on input line 16.
  (Chapters/Chapter1.aux)
@@ -1274,14 +1249,8 @@ L3 programming layer <2026-08-10>
 
 LaTeX Warning: There were undefined references.
 
-
-Package rerunfilecheck Warning: File `memorianueva.out' has changed.
-(rerunfilecheck)                Rerun to get outlines right
-(rerunfilecheck)                or use package `bookmark'.
-
-Package rerunfilecheck Info: Checksums for `memorianueva.out':
-(rerunfilecheck)             Before: 381A7293AF2673E64F08BAB6878897A5;3326
-(rerunfilecheck)             After:  9A11A43E9FFB0F3C68B366774F5BFD04;3492.
+Package rerunfilecheck Info: File `memorianueva.out' has not changed.
+(rerunfilecheck)             Checksum: DFC4B35D5635651C93DD1AAD5BE7757B;3780.
 
 Package biblatex Warning: Please (re)run BibTeX on the file(s):
 (biblatex)                memorianueva
@@ -1292,35 +1261,26 @@ Package logreq Info: Writing requests to 'memorianueva.run.xml'.
 
  ) 
 Here is how much of TeX's memory you used:
- 31983 strings out of 467441
- 695333 string characters out of 5408564
- 1506908 words of memory out of 5000000
- 60799 multiletter control sequences out of 15000+600000
- 692341 words of font info for 114 fonts, out of 8000000 for 9000
+ 31923 strings out of 467441
+ 694392 string characters out of 5408564
+ 1506722 words of memory out of 5000000
+ 60751 multiletter control sequences out of 15000+600000
+ 686642 words of font info for 106 fonts, out of 8000000 for 9000
  1142 hyphenation exceptions out of 8191
- 96i,20n,95p,1971b,2339s stack positions out of 10000i,1000n,20000p,200000b,200000s
-
-pdfTeX warning (dest): name{Hfootnote.1} has been referenced but does not exist
-, replaced by a fixed one
-
-<C:/Users/Gus/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmex
-10.pfb><C:/Users/Gus/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/
-cm/cmmi10.pfb><C:/Users/Gus/AppData/Local/Programs/MiKTeX/fonts/type1/public/am
-sfonts/cm/cmr10.pfb><C:/Users/Gus/AppData/Local/Programs/MiKTeX/fonts/type1/pub
-lic/amsfonts/cm/cmr8.pfb><C:/Users/Gus/AppData/Local/Programs/MiKTeX/fonts/type
-1/public/amsfonts/cm/cmsy10.pfb><C:/Users/Gus/AppData/Local/Programs/MiKTeX/fon
-ts/type1/urw/courier/ucrr8a.pfb><C:/Users/Gus/AppData/Local/Programs/MiKTeX/fon
-ts/type1/urw/helvetic/uhvb8a.pfb><C:/Users/Gus/AppData/Local/Programs/MiKTeX/fo
-nts/type1/urw/helvetic/uhvr8a.pfb><C:/Users/Gus/AppData/Local/Programs/MiKTeX/f
-onts/type1/urw/helvetic/uhvro8a.pfb><C:/Users/Gus/AppData/Local/Programs/MiKTeX
-/fonts/type1/urw/palatino/uplb8a.pfb><C:/Users/Gus/AppData/Local/Programs/MiKTe
-X/fonts/type1/urw/palatino/uplb8a.pfb><C:/Users/Gus/AppData/Local/Programs/MiKT
-eX/fonts/type1/urw/palatino/uplr8a.pfb><C:/Users/Gus/AppData/Local/Programs/MiK
-TeX/fonts/type1/urw/palatino/uplr8a.pfb><C:/Users/Gus/AppData/Local/Programs/Mi
-KTeX/fonts/type1/urw/palatino/uplri8a.pfb>
-Output written on memorianueva.pdf (29 pages, 297232 bytes).
+ 96i,20n,95p,1971b,2169s stack positions out of 10000i,1000n,20000p,200000b,200000s
+<C:/Users/Gus/AppData/Local/Programs/MiKTeX/fonts/type1/urw/courier/ucrr8a.pf
+b><C:/Users/Gus/AppData/Local/Programs/MiKTeX/fonts/type1/urw/helvetic/uhvb8a.p
+fb><C:/Users/Gus/AppData/Local/Programs/MiKTeX/fonts/type1/urw/helvetic/uhvr8a.
+pfb><C:/Users/Gus/AppData/Local/Programs/MiKTeX/fonts/type1/urw/helvetic/uhvro8
+a.pfb><C:/Users/Gus/AppData/Local/Programs/MiKTeX/fonts/type1/urw/palatino/uplb
+8a.pfb><C:/Users/Gus/AppData/Local/Programs/MiKTeX/fonts/type1/urw/palatino/upl
+b8a.pfb><C:/Users/Gus/AppData/Local/Programs/MiKTeX/fonts/type1/urw/palatino/up
+lr8a.pfb><C:/Users/Gus/AppData/Local/Programs/MiKTeX/fonts/type1/urw/palatino/u
+plr8a.pfb><C:/Users/Gus/AppData/Local/Programs/MiKTeX/fonts/type1/urw/palatino/
+uplri8a.pfb>
+Output written on memorianueva.pdf (31 pages, 1269266 bytes).
 PDF statistics:
- 458 PDF objects out of 1000 (max. 8388607)
- 109 named destinations out of 1000 (max. 500000)
- 189 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 416 PDF objects out of 1000 (max. 8388607)
+ 102 named destinations out of 1000 (max. 500000)
+ 184 words of extra memory for PDF output out of 10000 (max. 10000000)
 

@@ -208,48 +208,37 @@
     \field{urlyear}{2026}
   \endentry
 
-  \entry{IEEE:citation}{book}{}{}
-    \name{author}{1}{}{%
-      {{hash=I}{%
-         family={IEEE},
-         familyi={I\bibinitperiod},
-      }}%
+  \entry{bluetooth:core53}{manual}{}{}
+    \list{organization}{1}{%
+      {{Bluetooth SIG}}%
     }
-    \list{publisher}{1}{%
-      {IEEE Publications}%
-    }
-    \strng{namehash}{I1}
-    \strng{fullhash}{I1}
-    \field{labelnamesource}{author}
     \field{labeltitlesource}{title}
-    \field{edition}{1}
-    \field{title}{IEEE Citation Reference}
+    \field{title}{Bluetooth Core Specification Version 5.3}
     \verb{url}
-    \verb http://www.ieee.org/documents/ieeecitationref.pdf
+    \verb https://www.bluetooth.com/specifications/specs/core-specification-5-3
+    \verb /
     \endverb
-    \field{year}{2016}
-    \field{urlday}{26}
+    \field{year}{2021}
+    \field{urlday}{10}
     \field{urlmonth}{09}
-    \field{urlyear}{2016}
+    \field{urlyear}{2026}
   \endentry
 
-  \entry{CIAA}{misc}{}{}
-    \name{author}{1}{}{%
-      {{hash=P}{%
-         family={{Proyecto CIAA}},
-         familyi={P\bibinitperiod},
-      }}%
+  \entry{espressif:esp-idf-ble}{manual}{}{}
+    \list{organization}{1}{%
+      {Espressif Systems}%
     }
-    \strng{namehash}{P1}
-    \strng{fullhash}{P1}
-    \field{labelnamesource}{author}
     \field{labeltitlesource}{title}
-    \field{note}{Visitado el 2016-06-25}
-    \field{title}{Computadora Industrial Abierta Argentina}
+    \field{title}{Bluetooth Low Energy -- ESP-IDF Programming Guide}
     \verb{url}
-    \verb http://proyecto-ciaa.com.ar/devwiki/doku.php?id=start
+    \verb https://docs.espressif.com/projects/esp-idf/en/v5.3.3/esp32/api-guide
+    \verb s/ble/index.html
     \endverb
-    \field{year}{2014}
+    \field{version}{5.3.3}
+    \field{year}{2025}
+    \field{urlday}{10}
+    \field{urlmonth}{09}
+    \field{urlyear}{2026}
   \endentry
 \enddatalist
 \endinput

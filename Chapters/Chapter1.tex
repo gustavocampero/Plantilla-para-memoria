@@ -5,15 +5,15 @@
 \label{Chapter1}
 \label{IntroGeneral}
 
-En este capítulo se presenta el contexto del trabajo y se describen la empresa Sensify, el controlador N150 y la problemática identificada en las tareas de soporte técnico. También se analiza el estado del arte de las soluciones de configuración y diagnóstico empleadas en sistemas embebidos y de Internet de las cosas (IoT, del inglés, \textit{Internet of Things}). Por último, se exponen la motivación, los objetivos y el alcance del sistema desarrollado.
+En este capítulo se presenta el contexto del sistema desarrollado para heladeras comerciales, la problemática que motivó el trabajo y los principales antecedentes relacionados. Finalmente, se establecen los objetivos y el alcance del desarrollo.
 
 %----------------------------------------------------------------------------------------
 
-\section{Sensify y el N150}
+\section{Sistema Sensify para heladeras comerciales}
 
 Sensify S. A. S. \cite{sensify:web} es una empresa dedicada al análisis de datos que trabaja junto con empresas de alimentos y bebidas de América Latina para convertir heladeras comerciales en fuentes de información que permitan gestionar sus ventas de manera inteligente y sostenible. Uno de sus productos centrales es el controlador N150 \cite{sensify:n150}, un dispositivo diseñado para integrarse en heladeras comerciales con el propósito de supervisar su funcionamiento y transmitir información relevante hacia plataformas remotas mediante conectividad celular (2G y 4G).
 
-El N150 integra en una única plataforma funciones de control, monitoreo y conectividad \cite{sensify:n150}. Esta integración permite disponer de información sobre el estado operativo de las heladeras instaladas y facilita las tareas de diagnóstico y mantenimiento. Además, la información obtenida contribuye a la gestión técnica y operativa del parque de equipos conectados.
+El controlador integra en una única plataforma funciones de control, monitoreo y conectividad \cite{sensify:n150}. Esta integración permite disponer de información sobre el estado operativo de las heladeras instaladas y facilita las tareas de diagnóstico y mantenimiento. Además, la información obtenida contribuye a la gestión técnica y operativa del parque de equipos conectados.
 
 De acuerdo con datos internos de Sensify correspondientes a septiembre de 2026, la plataforma contaba con un parque aproximado de 70\,000 heladeras conectadas, frente a las 8\,000 unidades registradas en 2023. Para esa fecha, 8 fabricantes de heladeras habían integrado la tecnología de Sensify en sus equipos y la solución se encontraba presente en 10 países.
 
@@ -21,7 +21,7 @@ De acuerdo con datos internos de Sensify correspondientes a septiembre de 2026, 
 
 \subsection{El controlador N150}
 
-Desde el punto de vista arquitectónico, el controlador se basa en la interacción de distintos componentes especializados. Incorpora un microcontrolador PIC24FJ64GU205T \cite{microchip:pic24fj64gu205}, encargado de ejecutar la lógica de control eléctrico y mecánico del sistema de refrigeración. También integra un ESP32 \cite{espressif:esp32}, responsable de la conectividad y del procesamiento asociado a las comunicaciones. Para el acceso a redes celulares mediante comandos AT, cuenta con un módulo Quectel BG95 \cite{quectel:bg95}. Además, dispone de una memoria externa para almacenar información y respaldar datos cuando las condiciones de conectividad no permiten su transmisión inmediata.
+Desde el punto de vista arquitectónico, el controlador se basa en la interacción de distintos componentes especializados. Incorpora el PIC24FJ64GU205T \cite{microchip:pic24fj64gu205}, un microcontrolador encargado de ejecutar la lógica de control eléctrico y mecánico del sistema de refrigeración. También integra un microcontrolador ESP32 \cite{espressif:esp32}, responsable de la conectividad y del procesamiento asociado a las comunicaciones. Para el acceso a redes celulares mediante comandos AT, cuenta con un módulo Quectel BG95 \cite{quectel:bg95}. Además, dispone de una memoria externa para almacenar información y respaldar datos cuando las condiciones de conectividad no permiten su transmisión inmediata.
 
 Esta estructura proporciona capacidades de telemetría, parametrización remota, actualización de firmware y geolocalización de las heladeras instaladas. Con estas funciones, el N150 opera no solo como controlador del equipo de frío, sino también como nodo inteligente dentro de una red de activos conectados.
 
@@ -29,7 +29,7 @@ Esta estructura proporciona capacidades de telemetría, parametrización remota,
 
 \section{Contexto y motivación}
 
-La motivación del trabajo surgió de una limitación observada durante la operación del N150. Si bien la conectividad celular permitía atender las necesidades de telemetría y transmisión remota de datos, presentaba limitaciones para las tareas que requerían una interacción inmediata con el equipo. Entre estas tareas se encontraban la activación inicial, la modificación de parámetros, el diagnóstico técnico y la actualización de firmware.
+La motivación del trabajo surgió de una limitación observada durante las tareas de configuración y soporte técnico del N150. Si bien la conectividad celular permitía atender las necesidades de telemetría y transmisión remota de datos, presentaba limitaciones para las tareas que requerían una interacción inmediata con el equipo. Entre estas tareas se encontraban la activación inicial, la modificación de parámetros, el diagnóstico técnico y la actualización de firmware.
 
 Ante esta situación, se identificó la necesidad de disponer de un mecanismo de comunicación local que permitiera efectuar dichas operaciones de forma directa, rápida y confiable, sin depender de la cobertura ni de la estabilidad de la red celular. Esta necesidad adquiría especial relevancia durante la instalación, la validación en planta y el soporte técnico en campo, debido a que la disponibilidad de un canal de acceso inmediato condicionaba la eficiencia de cada intervención.
 
