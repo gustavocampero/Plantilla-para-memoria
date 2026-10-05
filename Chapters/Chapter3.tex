@@ -1,94 +1,146 @@
-\chapter{Diseño e implementación} % Main chapter title
+\chapter{Diseño e implementación}
+\label{Chapter3}
 
-\label{Chapter3} % Change X to a consecutive number; for referencing this chapter elsewhere, use \ref{ChapterX}
-
-Todos los capítulos deben comenzar con un breve párrafo introductorio que indique cuál es el contenido que se encontrará al leerlo.  La redacción sobre el contenido de la memoria debe hacerse en presente y todo lo referido al proyecto en pasado, siempre de modo impersonal.
-
-\definecolor{mygreen}{rgb}{0,0.6,0}
-\definecolor{mygray}{rgb}{0.5,0.5,0.5}
-\definecolor{mymauve}{rgb}{0.58,0,0.82}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% parámetros para configurar el formato del código en los entornos lstlisting
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\lstset{ %
-  backgroundcolor=\color{white},   % choose the background color; you must add \usepackage{color} or \usepackage{xcolor}
-  basicstyle=\footnotesize,        % the size of the fonts that are used for the code
-  breakatwhitespace=false,         % sets if automatic breaks should only happen at whitespace
-  breaklines=true,                 % sets automatic line breaking
-  captionpos=b,                    % sets the caption-position to bottom
-  commentstyle=\color{mygreen},    % comment style
-  deletekeywords={...},            % if you want to delete keywords from the given language
-  %escapeinside={\%*}{*)},          % if you want to add LaTeX within your code
-  %extendedchars=true,              % lets you use non-ASCII characters; for 8-bits encodings only, does not work with UTF-8
-  %frame=single,	                % adds a frame around the code
-  keepspaces=true,                 % keeps spaces in text, useful for keeping indentation of code (possibly needs columns=flexible)
-  keywordstyle=\color{blue},       % keyword style
-  language=[ANSI]C,                % the language of the code
-  %otherkeywords={*,...},           % if you want to add more keywords to the set
-  numbers=left,                    % where to put the line-numbers; possible values are (none, left, right)
-  numbersep=5pt,                   % how far the line-numbers are from the code
-  numberstyle=\tiny\color{mygray}, % the style that is used for the line-numbers
-  rulecolor=\color{black},         % if not set, the frame-color may be changed on line-breaks within not-black text (e.g. comments (green here))
-  showspaces=false,                % show spaces everywhere adding particular underscores; it overrides 'showstringspaces'
-  showstringspaces=false,          % underline spaces within strings only
-  showtabs=false,                  % show tabs within strings adding particular underscores
-  stepnumber=1,                    % the step between two line-numbers. If it's 1, each line will be numbered
-  stringstyle=\color{mymauve},     % string literal style
-  tabsize=2,	                   % sets default tabsize to 2 spaces
-  title=\lstname,                  % show the filename of files included with \lstinputlisting; also try caption instead of title
-  morecomment=[s]{/*}{*/}
-}
-
+Este capítulo describe la arquitectura y la organización interna del módulo de comunicación BLE desarrollado para el controlador N150. Se presenta su integración con el firmware existente y se detallan los módulos que componen \texttt{sfy-BLE}.
 
 %----------------------------------------------------------------------------------------
-%	SECTION 1
+
+\section{Arquitectura del sistema}
+\label{sec:arquitectura_sistema}
+
+El desarrollo se incorpora al firmware del N150 como el componente \texttt{sfy-BLE}. Su responsabilidad es proporcionar una interfaz de comunicación local basada en BLE para las tareas de soporte del controlador. El componente recibe solicitudes de un cliente BLE externo, las adapta a las interfaces disponibles en el firmware y publica las respuestas correspondientes. El cliente utiliza el módulo como servidor GATT, pero no forma parte del sistema desarrollado en este trabajo.
+
+El alcance del trabajo se limita a \texttt{sfy-BLE}. Los subsistemas que gestionan el funcionamiento de la heladera, la persistencia de datos, los parámetros, la conectividad remota y los registros ya se encontraban desarrollados en el firmware del N150. Por este motivo, el módulo BLE no incorpora una segunda implementación de esas capacidades ni modifica sus responsabilidades. Su aporte consiste en habilitar un acceso local que reutiliza los servicios existentes.
+
+La arquitectura general se organiza alrededor de \texttt{sfy-BLE}, destacado como el componente desarrollado, y de los módulos preexistentes del N150. La pila NimBLE provee el acceso a la radio y a los mecanismos BLE sobre los que se apoya \texttt{sfy-BLE}. A través de esta pila, el componente anuncia el equipo, atiende la conexión del cliente y administra la interfaz GATT.
+
+Dentro de \texttt{sfy-BLE}, \texttt{ble-Main} administra el ciclo de vida de NimBLE. \texttt{ble-Gap} configura el \textit{advertising} y la conexión, mientras que \texttt{ble-Gatt} define los servicios y las características mediante los que se intercambian las solicitudes y respuestas con el cliente. Estos módulos constituyen la interfaz de comunicación local y coordinan el acceso a los módulos internos de procesamiento.
+
+La figura \ref{fig:arquitectura_sistema} presenta los bloques principales y el flujo de procesamiento entre ellos. El recuadro exterior delimita el firmware del N150 y deja fuera al cliente BLE, que no forma parte del desarrollo. El recuadro de trazo grueso agrupa los módulos de \texttt{sfy-BLE}, y los bloques ubicados fuera de él corresponden a componentes preexistentes. Las líneas continuas indican intercambios directos y las punteadas, integraciones mediante callbacks.
+
+\begin{figure}[!t]
+\centering
+\includegraphics[width=\textwidth]{Figures/arquitecturaDiagrama2.png}
+\caption{Arquitectura general del firmware N150 e integración del módulo \texttt{sfy-BLE}.}
+\label{fig:arquitectura_sistema}
+\end{figure}
+
+\FloatBarrier
+
+\subsection{Relación con los subsistemas del N150}
+
+\texttt{sfy-BLE} se integra con el firmware mediante dos mecanismos distintos. El primero utiliza callbacks registrados durante la inicialización. Mediante estos callbacks, el módulo solicita la generación de metadatos y diagnóstico, la lectura y el procesamiento de parámetros, la ejecución de comandos locales y el encolado de comandos destinados a la lógica de nube y conectividad remota. Este mecanismo evita que \texttt{sfy-BLE} dependa directamente de las implementaciones internas de estos servicios.
+
+La gestión de parámetros conserva, por lo tanto, las validaciones y el flujo de actualización que ya utilizaba el N150. De manera equivalente, las órdenes de control se resuelven mediante las rutinas existentes de prueba de los actuadores. Los comandos que deben alcanzar la infraestructura remota se entregan a la lógica de nube y conectividad remota para que sigan el mismo camino de procesamiento que los comandos recibidos por los medios de conectividad habituales.
+
+El segundo mecanismo corresponde a dependencias directas del componente. \texttt{sfy-BLE} utiliza el subsistema de datos para obtener el último registro de telemetría y transferir el histórico almacenado. También se vincula con el sistema de registros para publicar mensajes generales y la salida de terminal durante una intervención de soporte. Estas dependencias forman parte de las operaciones internas de transferencia y depuración del módulo, por lo que no se exponen mediante callbacks del firmware principal.
+
+La diferenciación entre ambos mecanismos responde al límite de responsabilidades definido para el desarrollo. Los callbacks se emplean cuando la operación pertenece a la lógica de negocio del N150 y debe permanecer controlada por el firmware principal. Las dependencias directas se emplean para los servicios que \texttt{sfy-BLE} necesita utilizar durante su funcionamiento interno. Esta decisión mantiene al componente desacoplado de las decisiones de control y conectividad, sin impedir el acceso a los datos y registros necesarios para la interfaz local.
+
+\subsection{Flujo de procesamiento}
+
+El flujo de procesamiento representado en la figura \ref{fig:arquitectura_sistema} es funcional y no corresponde a un diagrama estricto de llamadas entre archivos fuente. Las solicitudes recibidas por \texttt{ble-Gatt} que requieren fragmentación se entregan a \texttt{ble-rcvMsg}. Este módulo reensambla la secuencia recibida y, cuando completa el mensaje, lo entrega a \texttt{ble-Security}. El módulo de seguridad autentica la sesión, verifica el mensaje y recupera su contenido antes de que alcance los adaptadores funcionales.
+
+Los módulos \texttt{ble-Commands}, \texttt{ble-Data} y \texttt{ble-Params} procesan el contenido validado según la operación solicitada. \texttt{ble-Logs} publica los registros generales y la salida de terminal utilizados durante soporte. Las operaciones de autenticación y los mensajes breves se procesan directamente entre \texttt{ble-Gatt} y \texttt{ble-Security}, sin requerir el reensamblado previo.
+
+Una vez resuelta la solicitud, el resultado regresa a la interfaz GATT y se transmite al cliente BLE. Esta organización permite que la comunicación local sea una vía adicional de acceso al N150, sin alterar el funcionamiento interno de los módulos preexistentes. La arquitectura también facilita el mantenimiento: las modificaciones en los parámetros, el control o la lógica de nube y conectividad remota no requieren cambios en la capa BLE mientras se conserve el contrato de integración establecido.
+
 %----------------------------------------------------------------------------------------
-\section{Análisis del software}
- 
-La idea de esta sección es resaltar los problemas encontrados, los criterios utilizados y la justificación de las decisiones que se hayan tomado.
 
-Se puede agregar código o pseudocódigo dentro de un entorno lstlisting con el siguiente código:
+\section{Diseño detallado por módulos}
+\label{sec:diseno_modulos}
 
-\begin{verbatim}
-\begin{lstlisting}[caption= "un epígrafe descriptivo"]
-	las líneas de código irían aquí...
-\end{lstlisting}
-\end{verbatim}
+La implementación se dividió en módulos con responsabilidades acotadas. La modularización combinó la separación de responsabilidades, la mantenibilidad y la posibilidad de realizar pruebas independientes. Esta organización evita concentrar la configuración de la pila, el procesamiento de mensajes, la seguridad y la integración con el N150 en un único componente. La tabla \ref{tab:modulos_ble} resume los módulos que conforman \texttt{sfy-BLE}.
 
-A modo de ejemplo, se muestra el fragmento de código \ref{cod:vControl}:
+\begin{table}[htbp]
+\centering
+\caption{Responsabilidades de los módulos del componente BLE.}
+\label{tab:modulos_ble}
+\begin{tabular}{p{0.25\textwidth} p{0.65\textwidth}}
+\toprule
+Módulo & Responsabilidad principal \\
+\midrule
+\texttt{ble-Main} & Administra el ciclo de vida de NimBLE, la tarea del host y la sincronización de los recursos compartidos. \\
+\texttt{ble-Gap} & Configura el nombre, el \textit{advertising}, la conexión, la desconexión y la unidad máxima de transmisión (MTU, del inglés, \textit{Maximum Transmission Unit}). \\
+\texttt{ble-Gatt} & Define servicios y características, procesa accesos y transmite notificaciones e indicaciones. \\
+\texttt{ble-rcvMsg} & Reensambla mensajes fragmentados y valida secuencia, longitud y CRC32. \\
+\texttt{ble-Security} & Implementa autenticación, claves de sesión, contadores y cifrado AES-256-GCM. \\
+\texttt{ble-Data} & Genera metadatos, diagnóstico e histórico, y administra los datos de \textit{advertising}. \\
+\texttt{ble-Params} & Vincula las solicitudes de lectura y escritura con el gestor de parámetros. \\
+\texttt{ble-Commands} & Adapta los comandos locales y los destinados a la lógica de nube y conectividad remota. \\
+\texttt{ble-Logs} & Publica registros generales y la salida de terminal para soporte y depuración. \\
+\bottomrule
+\end{tabular}
+\end{table}
 
-\begin{lstlisting}[label=cod:vControl,caption=Pseudocódigo del lazo principal de control.]  % Start your code-block
+\subsection{\texttt{ble-Main}}
 
-#define MAX_SENSOR_NUMBER 3
-#define MAX_ALARM_NUMBER  6
-#define MAX_ACTUATOR_NUMBER 6
+\texttt{ble-Main} administra el ciclo de vida de la pila NimBLE mediante cuatro estados: detenido, iniciando, iniciado y deteniendo. Las transiciones se protegen con un mutex recursivo compartido con \texttt{ble-Params}. El carácter recursivo permite que un cambio del modo de operación, que ya retiene el mutex, invoque el inicio o la detención de la pila sin bloquearse a sí mismo. Las solicitudes que coinciden con el estado actual se resuelven sin efectos, mientras que las que llegan durante una transición en curso se rechazan, de modo que no se reinicializan recursos que puedan estar en uso.
 
-uint32_t sensorValue[MAX_SENSOR_NUMBER];		
-FunctionalState alarmControl[MAX_ALARM_NUMBER];	//ENABLE or DISABLE
-state_t alarmState[MAX_ALARM_NUMBER];						//ON or OFF
-state_t actuatorState[MAX_ACTUATOR_NUMBER];			//ON or OFF
+La inicialización recibe el serial del equipo, prepara el material criptográfico utilizado por \texttt{ble-Security} y, si el parámetro \texttt{APP\_LINK} no deshabilita la interfaz, inicia la pila. El inicio construye el nombre publicado a partir del serial, inicializa NimBLE y los servicios del perfil de acceso genérico (GAP, del inglés, \textit{Generic Access Profile}) y GATT, registra los callbacks del host y crea una tarea de FreeRTOS dedicada a ejecutar el host BLE. Esta tarea separa el procesamiento de eventos BLE del flujo principal del firmware. Si alguna de estas etapas falla, se libera lo ya inicializado y el estado vuelve a detenido. El \textit{advertising} no comienza durante el inicio, sino cuando el host se sincroniza con el controlador. En ese momento se fija una MTU preferida de 256 bytes y se delega a \texttt{ble-Gap} la configuración del \textit{advertising}.
 
-void vControl() {
+La detención sigue el orden inverso. Primero se detiene el \textit{advertising} y se cierra la conexión activa, luego se solicita la finalización del host y se espera que su tarea termine antes de liberar la pila. Si la tarea no finaliza dentro del tiempo previsto o la liberación falla, el módulo conserva el estado iniciado y no informa una detención incompleta como exitosa.
 
-	initGlobalVariables();
-	
-	period = 500 ms;
-		
-	while(1) {
+La configuración de NimBLE se ajustó al rol que cumple el N150 en la interfaz local. Como el equipo actúa solo como periférico y atiende a un único cliente por vez, se deshabilitaron los roles innecesarios y se redujeron las reservas de memoria de la pila. La tabla \ref{tab:config_nimble} resume estos ajustes. La decisión responde a que la memoria dinámica del microcontrolador se comparte con el resto de los subsistemas del firmware. La medición de la memoria libre antes y después del inicio de la pila mostró que su consumo se redujo de 43\,740 bytes a 13\,980 bytes, lo que liberó 29\,760 bytes.
 
-		ticks = xTaskGetTickCount();
-		
-		updateSensors();
-		
-		updateAlarms();
-		
-		controlActuators();
-		
-		vTaskDelayUntil(&ticks, period);
-	}
-}
-\end{lstlisting}
+\begin{table}[htbp]
+\centering
+\caption{Ajustes de configuración de NimBLE.}
+\label{tab:config_nimble}
+\begin{tabular}{p{0.24\textwidth} p{0.15\textwidth} p{0.16\textwidth} p{0.30\textwidth}}
+\toprule
+Parámetro & Valor inicial & Valor adoptado & Justificación \\
+\midrule
+Conexiones simultáneas & 3 & 1 & La interfaz local atiende a un único cliente. \\
+Roles central y \textit{broadcaster} habilitados & Sí & No & El equipo opera solo como periférico. \\
+Bloques de memoria del primer grupo & 24 $\times$ 256~B & 12 $\times$ 256~B & El tráfico de la interfaz local es acotado. \\
+Bloques de memoria del segundo grupo & 64 $\times$ 320~B & Ninguno & Los mensajes extensos se fragmentan en la capa de aplicación. \\
+Búferes de datos entrantes & 32 $\times$ 255~B & 8 $\times$ 255~B & No se prevé un tráfico entrante elevado. \\
+MTU preferida & \multicolumn{2}{c}{256~B} & Coincide con la configurada en el cliente. \\
+\bottomrule
+\end{tabular}
+\end{table}
 
+\subsection{\texttt{ble-Gap} y \texttt{ble-Gatt}}
 
+\texttt{ble-Gap} concentra los procedimientos de descubrimiento y conexión. Construye el nombre del equipo a partir de su serial, configura los datos de \textit{advertising} y responde a los eventos de conexión, desconexión y negociación de MTU. Al finalizar una conexión, restablece el estado necesario para que el controlador vuelva a estar disponible para una nueva intervención local.
 
+El parámetro \texttt{APP\_LINK}, administrado por el gestor de parámetros del equipo, selecciona el modo de operación de la interfaz. La tabla \ref{tab:modos_app_link} resume los cuatro modos disponibles. Un cambio de modo se aplica sin reiniciar el equipo. Si se deshabilita la interfaz, se detiene la pila; si se habilita, se inicia; y si se pasa de un modo activo a otro, solo se actualiza el contenido del \textit{advertising}.
+
+\begin{table}[htbp]
+\centering
+\caption{Modos de operación definidos por \texttt{APP\_LINK}.}
+\label{tab:modos_app_link}
+\begin{tabular}{p{0.24\textwidth} p{0.22\textwidth} p{0.18\textwidth} p{0.18\textwidth}}
+\toprule
+Modo & Datos en el \textit{advertising} & Nombre en la respuesta de escaneo & Intervalo de \textit{advertising} \\
+\midrule
+Deshabilitado & \multicolumn{3}{l}{Pila BLE detenida.} \\
+\textit{Advertising} con datos y conexión & Último registro de telemetría & Sí & 500--510~ms \\
+\textit{Advertising} y conexión (predeterminado) & No & Sí & 500--510~ms \\
+Solo conexión & No & No & 2000--3000~ms \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+El modo con datos permite consultar el estado actual del equipo sin establecer una conexión. En ese modo, \texttt{ble-Gap} incorpora al paquete de \textit{advertising} un campo de datos específicos del fabricante con el último registro de telemetría, que \texttt{ble-Data} obtiene del subsistema de datos y codifica en formato binario. Un cliente que solo escanea puede leer así la medición más reciente sin el costo de conexión, autenticación y transferencia que implica una sesión completa. Como el paquete de \textit{advertising} admite 31 bytes, el nombre del equipo se transmite en la respuesta de escaneo y el campo de datos se limita a 24 bytes. \texttt{ble-Gap} vuelve a solicitar el registro a \texttt{ble-Data} cada vez que inicia el \textit{advertising} y cada vez que actualiza su contenido sin detenerlo, y solo reemplaza el campo si la información cambió.
+
+\texttt{ble-Gatt} define la interfaz de servicios y características utilizada por el cliente BLE. Sus manejadores reciben las operaciones de lectura, escritura y suscripción, y coordinan la transmisión de notificaciones e indicaciones. También constituye el punto de integración con \texttt{ble-rcvMsg}, \texttt{ble-Security} y los adaptadores funcionales. Esta división permite modificar la estructura GATT sin incorporar en sus manejadores la lógica de reensamblado, autenticación o acceso a los subsistemas del N150.
+
+\subsection{\texttt{ble-rcvMsg} y \texttt{ble-Security}}
+
+\texttt{ble-rcvMsg} se separó de la capa GATT para reutilizar la fragmentación y sus validaciones en las características que reciben mensajes extensos. El módulo reensambla la secuencia recibida y verifica número de secuencia, longitud y CRC32 antes de entregar el mensaje completo. De este modo, los manejadores GATT permanecen enfocados en el acceso a las características y no replican el tratamiento de cada fragmento.
+
+\texttt{ble-Security} implementa una política transversal para todas las operaciones funcionales. Administra la autenticación de sesión, las claves temporales, los contadores y el cifrado de mensajes. Mantener esta función en un módulo separado evita mezclar detalles criptográficos con los servicios GATT y permite modificar el mecanismo de protección sin alterar los adaptadores de datos, parámetros o comandos.
+
+\subsection{\texttt{ble-Data} y \texttt{ble-Params}}
+
+\texttt{ble-Data} concentra las operaciones de consulta. Genera metadatos del equipo, un diagnóstico de conectividad y la transferencia de información histórica almacenada. Los metadatos y el diagnóstico se obtienen mediante callbacks, mientras que el histórico y el último registro de telemetría se integran con el subsistema de datos persistentes. El último registro también se entrega a \texttt{ble-Gap} para el modo de \textit{advertising} con datos.
+
+\texttt{ble-Params} atiende la consulta y el procesamiento de cambios de configuración. Ambas operaciones se delegan mediante callbacks al gestor de parámetros ya existente. Luego de una modificación, el firmware conserva su mecanismo habitual de reporte de cambios, de modo que la interfaz local no introduce un flujo de configuración paralelo.
+
+\subsection{\texttt{ble-Commands} y \texttt{ble-Logs}}
+
+\texttt{ble-Commands} diferencia las acciones locales de control de los comandos destinados a la infraestructura remota. Las acciones locales se delegan mediante un callback a las rutinas existentes del controlador. Los comandos remotos se incorporan a la cola de la lógica de nube y conectividad remota, lo que evita duplicar validaciones y conserva el flujo normal de procesamiento.
+
+\texttt{ble-Logs} ofrece canales para registros generales y salida de terminal. Esta capacidad se utilizó durante el desarrollo para depurar la interfaz BLE y durante soporte para observar el comportamiento del N150 sin depender de la conectividad celular. El módulo limita la tasa de envío y conserva los mensajes de terminal en un búfer circular, con el objetivo de que la depuración no interfiera con las operaciones funcionales de la interfaz local.

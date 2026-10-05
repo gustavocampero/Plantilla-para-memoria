@@ -2,21 +2,29 @@
 \contentsline {chapter}{Resumen}{\es@scroman {i}}{section*.1}%
 \contentsline {chapter}{\numberline {1}Introducción general}{1}{chapter.1}%
 \contentsline {section}{\numberline {1.1}Sistema Sensify para heladeras comerciales}{1}{section.1.1}%
-\contentsline {subsection}{\numberline {1.1.1}El controlador N150}{1}{subsection.1.1.1}%
 \contentsline {section}{\numberline {1.2}Contexto y motivación}{2}{section.1.2}%
 \contentsline {section}{\numberline {1.3}Estado del arte}{2}{section.1.3}%
 \contentsline {section}{\numberline {1.4}Objetivos del trabajo}{3}{section.1.4}%
 \contentsline {chapter}{\numberline {2}Introducción específica}{5}{chapter.2}%
 \contentsline {section}{\numberline {2.1}Ciclo de refrigeración por compresión de vapor}{5}{section.2.1}%
-\contentsline {section}{\numberline {2.2}Arquitectura de conectividad del N150}{6}{section.2.2}%
-\contentsline {section}{\numberline {2.3}Bluetooth Low Energy}{7}{section.2.3}%
-\contentsline {subsection}{\numberline {2.3.1}Adecuación de BLE al N150}{7}{subsection.2.3.1}%
-\contentsline {subsection}{\numberline {2.3.2}Comunicación entre el teléfono y el controlador}{8}{subsection.2.3.2}%
+\contentsline {section}{\numberline {2.2}El controlador N150}{6}{section.2.2}%
+\contentsline {section}{\numberline {2.3}Arquitectura de conectividad del N150}{7}{section.2.3}%
+\contentsline {section}{\numberline {2.4}Bluetooth Low Energy}{8}{section.2.4}%
+\contentsline {subsection}{\numberline {2.4.1}Adecuación de BLE al N150}{8}{subsection.2.4.1}%
+\contentsline {subsection}{\numberline {2.4.2}Comunicación entre el teléfono y el controlador}{9}{subsection.2.4.2}%
 \contentsline {chapter}{\numberline {3}Diseño e implementación}{11}{chapter.3}%
-\contentsline {section}{\numberline {3.1}Análisis del software}{11}{section.3.1}%
-\contentsline {chapter}{\numberline {4}Ensayos y resultados}{13}{chapter.4}%
-\contentsline {section}{\numberline {4.1}Pruebas funcionales del hardware}{13}{section.4.1}%
-\contentsline {chapter}{\numberline {5}Conclusiones}{15}{chapter.5}%
-\contentsline {section}{\numberline {5.1}Conclusiones generales }{15}{section.5.1}%
-\contentsline {section}{\numberline {5.2}Próximos pasos}{15}{section.5.2}%
-\contentsline {chapter}{Bibliografía}{17}{appendix*.12}%
+\contentsline {section}{\numberline {3.1}Arquitectura del sistema}{11}{section.3.1}%
+\contentsline {subsection}{\numberline {3.1.1}Relación con los subsistemas del N150}{12}{subsection.3.1.1}%
+\contentsline {subsection}{\numberline {3.1.2}Flujo de procesamiento}{13}{subsection.3.1.2}%
+\contentsline {section}{\numberline {3.2}Diseño detallado por módulos}{13}{section.3.2}%
+\contentsline {subsection}{\numberline {3.2.1}\texttt {ble-Main}}{14}{subsection.3.2.1}%
+\contentsline {subsection}{\numberline {3.2.2}\texttt {ble-Gap} y \texttt {ble-Gatt}}{15}{subsection.3.2.2}%
+\contentsline {subsection}{\numberline {3.2.3}\texttt {ble-rcvMsg} y \texttt {ble-Security}}{16}{subsection.3.2.3}%
+\contentsline {subsection}{\numberline {3.2.4}\texttt {ble-Data} y \texttt {ble-Params}}{16}{subsection.3.2.4}%
+\contentsline {subsection}{\numberline {3.2.5}\texttt {ble-Commands} y \texttt {ble-Logs}}{17}{subsection.3.2.5}%
+\contentsline {chapter}{\numberline {4}Ensayos y resultados}{19}{chapter.4}%
+\contentsline {section}{\numberline {4.1}Pruebas funcionales del hardware}{19}{section.4.1}%
+\contentsline {chapter}{\numberline {5}Conclusiones}{21}{chapter.5}%
+\contentsline {section}{\numberline {5.1}Conclusiones generales }{21}{section.5.1}%
+\contentsline {section}{\numberline {5.2}Próximos pasos}{21}{section.5.2}%
+\contentsline {chapter}{Bibliografía}{23}{appendix*.19}%

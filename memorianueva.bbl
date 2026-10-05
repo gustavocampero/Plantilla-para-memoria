@@ -53,55 +53,6 @@
     \field{urlyear}{2026}
   \endentry
 
-  \entry{microchip:pic24fj64gu205}{manual}{}{}
-    \list{organization}{1}{%
-      {Microchip Technology Inc.}%
-    }
-    \field{labeltitlesource}{title}
-    \field{note}{DS40002204D}
-    \field{title}{{PIC24FJ64GU205} Family Data Sheet}
-    \verb{url}
-    \verb https://ww1.microchip.com/downloads/en/DeviceDoc/PIC24FJ64GU205-Famil
-    \verb y-Data-Sheet-DS40002204D.pdf
-    \endverb
-    \field{year}{2021}
-    \field{urlday}{04}
-    \field{urlmonth}{09}
-    \field{urlyear}{2026}
-  \endentry
-
-  \entry{espressif:esp32}{manual}{}{}
-    \list{organization}{1}{%
-      {Espressif Systems}%
-    }
-    \field{labeltitlesource}{title}
-    \field{note}{Rev. 5.3}
-    \field{title}{{ESP32} Technical Reference Manual}
-    \verb{url}
-    \verb https://www.espressif.com/sites/default/files/documentation/esp32_tec
-    \verb hnical_reference_manual_en.pdf
-    \endverb
-    \field{year}{2023}
-    \field{urlday}{04}
-    \field{urlmonth}{09}
-    \field{urlyear}{2026}
-  \endentry
-
-  \entry{quectel:bg95}{misc}{}{}
-    \list{organization}{1}{%
-      {Quectel Wireless Solutions}%
-    }
-    \field{labeltitlesource}{title}
-    \field{title}{{BG95} Cat M1/Cat NB2/EGPRS Series}
-    \verb{url}
-    \verb https://www.quectel.com/product/lpwa-bg95-cat-m1-cat-nb2-egprs-series
-    \verb /
-    \endverb
-    \field{urlday}{04}
-    \field{urlmonth}{09}
-    \field{urlyear}{2026}
-  \endentry
-
   \entry{SwiftSensors:web}{misc}{}{}
     \name{author}{1}{}{%
       {{hash=S}{%
@@ -232,6 +183,55 @@
     \field{urlyear}{2026}
   \endentry
 
+  \entry{microchip:pic24fj64gu205}{manual}{}{}
+    \list{organization}{1}{%
+      {Microchip Technology Inc.}%
+    }
+    \field{labeltitlesource}{title}
+    \field{note}{DS40002204D}
+    \field{title}{{PIC24FJ64GU205} Family Data Sheet}
+    \verb{url}
+    \verb https://ww1.microchip.com/downloads/en/DeviceDoc/PIC24FJ64GU205-Famil
+    \verb y-Data-Sheet-DS40002204D.pdf
+    \endverb
+    \field{year}{2021}
+    \field{urlday}{04}
+    \field{urlmonth}{09}
+    \field{urlyear}{2026}
+  \endentry
+
+  \entry{espressif:esp32}{manual}{}{}
+    \list{organization}{1}{%
+      {Espressif Systems}%
+    }
+    \field{labeltitlesource}{title}
+    \field{note}{Rev. 5.3}
+    \field{title}{{ESP32} Technical Reference Manual}
+    \verb{url}
+    \verb https://www.espressif.com/sites/default/files/documentation/esp32_tec
+    \verb hnical_reference_manual_en.pdf
+    \endverb
+    \field{year}{2023}
+    \field{urlday}{04}
+    \field{urlmonth}{09}
+    \field{urlyear}{2026}
+  \endentry
+
+  \entry{quectel:bg95}{misc}{}{}
+    \list{organization}{1}{%
+      {Quectel Wireless Solutions}%
+    }
+    \field{labeltitlesource}{title}
+    \field{title}{{BG95} Cat M1/Cat NB2/EGPRS Series}
+    \verb{url}
+    \verb https://www.quectel.com/product/lpwa-bg95-cat-m1-cat-nb2-egprs-series
+    \verb /
+    \endverb
+    \field{urlday}{04}
+    \field{urlmonth}{09}
+    \field{urlyear}{2026}
+  \endentry
+
   \entry{bluetooth:core53}{manual}{}{}
     \list{organization}{1}{%
       {{Bluetooth SIG}}%
@@ -255,11 +255,11 @@
     \field{labeltitlesource}{title}
     \field{title}{Bluetooth Low Energy -- ESP-IDF Programming Guide}
     \verb{url}
-    \verb https://docs.espressif.com/projects/esp-idf/en/v5.3.4/esp32/api-guide
+    \verb https://docs.espressif.com/projects/esp-idf/en/v5.3.2/esp32/api-guide
     \verb s/ble/index.html
     \endverb
-    \field{version}{5.3.4}
-    \field{year}{2025}
+    \field{version}{5.3.2}
+    \field{year}{2024}
     \field{urlday}{10}
     \field{urlmonth}{09}
     \field{urlyear}{2026}

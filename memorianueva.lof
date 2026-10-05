@@ -1,8 +1,12 @@
 \babel@toc {spanish}{}\relax 
 \addvspace {10\p@ }
+\contentsline {figure}{\numberline {1.1}{\ignorespaces Presencia regional de Sensify}}{1}{figure.caption.7}%
 \addvspace {10\p@ }
-\contentsline {figure}{\numberline {2.1}{\ignorespaces Ciclo de refrigeración}}{6}{figure.caption.8}%
-\contentsline {figure}{\numberline {2.2}{\ignorespaces Arquitectura de conectividad del N150}}{7}{figure.caption.9}%
+\contentsline {figure}{\numberline {2.1}{\ignorespaces Ciclo de refrigeración}}{6}{figure.caption.9}%
+\contentsline {figure}{\numberline {2.2}{\ignorespaces Controlador N150}}{6}{figure.caption.10}%
+\contentsline {figure}{\numberline {2.3}{\ignorespaces Placa interna del N150}}{7}{figure.caption.11}%
+\contentsline {figure}{\numberline {2.4}{\ignorespaces Arquitectura de conectividad del N150}}{8}{figure.caption.12}%
 \addvspace {10\p@ }
+\contentsline {figure}{\numberline {3.1}{\ignorespaces Arquitectura general del firmware N150 e integración del módulo \texttt {sfy-BLE}.}}{12}{figure.caption.14}%
 \addvspace {10\p@ }
 \addvspace {10\p@ }

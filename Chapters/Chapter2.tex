@@ -2,7 +2,7 @@
 
 \label{Chapter2}
 
-En este capítulo se presentan los conceptos técnicos que fundamentan el trabajo, entre ellos el ciclo de refrigeración y la función del controlador, su arquitectura de conectividad y las tecnologías de comunicación relevantes para implementar una interfaz local.
+En este capítulo se presentan los conceptos técnicos que fundamentan el trabajo, entre ellos el ciclo de refrigeración y la función del controlador, el hardware del N150, su arquitectura de conectividad y las tecnologías de comunicación relevantes para implementar una interfaz local.
 
 %----------------------------------------------------------------------------------------
 
@@ -28,6 +28,33 @@ En el caso particular del N150, el controlador interviene en la lógica de regul
 
 %----------------------------------------------------------------------------------------
 
+\section{El controlador N150}
+\label{sec:controlador_n150}
+
+El N150 es un producto preexistente de Sensify. Su hardware y sus subsistemas de control y conectividad celular no forman parte de este trabajo, sino que constituyen la plataforma sobre la que se integró la interfaz local. La figura \ref{fig:n150} muestra el controlador. En su frente dispone de un visor, indicadores de estado y teclas para la operación local del equipo.
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[width=0.6\textwidth]{Figures/N150_render.jpg}
+	\caption[Controlador N150]{Controlador N150. Imagen cedida por Sensify S.~A.~S.}
+	\label{fig:n150}
+\end{figure}
+
+Desde el punto de vista arquitectónico, el controlador se basa en la interacción de distintos componentes especializados. Incorpora el PIC24FJ64GU205T \cite{microchip:pic24fj64gu205}, un microcontrolador encargado de ejecutar la lógica de control eléctrico y mecánico del sistema de refrigeración. También integra un microcontrolador ESP32 \cite{espressif:esp32}, responsable de la conectividad y del procesamiento asociado a las comunicaciones. Para el acceso a redes celulares mediante comandos AT, cuenta con un módulo Quectel BG95 \cite{quectel:bg95}. Además, dispone de una memoria externa para almacenar información y respaldar datos cuando las condiciones de conectividad no permiten su transmisión inmediata.
+
+La figura \ref{fig:placa_oem} muestra la placa interna del N150 sobre la que se realizó el desarrollo. En ella se identifican el módulo ESP32 y el módem Quectel BG95.
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[width=0.75\textwidth]{Figures/oem.jpg}
+	\caption[Placa interna del N150]{Placa interna del N150 con el módulo ESP32 y el módem Quectel BG95. Imagen cedida por Sensify S.~A.~S.}
+	\label{fig:placa_oem}
+\end{figure}
+
+Esta estructura proporciona capacidades de telemetría, parametrización remota, actualización de firmware y geolocalización de las heladeras instaladas. Con estas funciones, el N150 opera no solo como controlador del equipo de frío, sino también como nodo inteligente dentro de una red de activos conectados.
+
+%----------------------------------------------------------------------------------------
+
 \section{Arquitectura de conectividad del N150}
 \label{sec:arquitectura_conectividad}
 
@@ -39,26 +66,26 @@ La figura \ref{fig:conexion_N150} presenta la relación entre los subsistemas y 
 
 \begin{figure}[htbp]
 	\centering
-	\includegraphics[width=\textwidth]{Figures/conexionN150.png}
+	\includegraphics[width=\textwidth]{Figures/conexionN150.pdf}
 	\caption[Arquitectura de conectividad del N150]{Arquitectura de conectividad del controlador N150.}
 	\label{fig:conexion_N150}
 \end{figure}
 
-Para el acceso local se utiliza la interfaz BLE integrada en el ESP32 y gestionada mediante ESP-IDF 5.3.4. Este canal permite que un teléfono se comunique directamente con el controlador sin utilizar el módem celular ni una red del establecimiento.
+Para el acceso local se utiliza la interfaz Bluetooth de baja energía (BLE, del inglés, \textit{Bluetooth Low Energy}) integrada en el ESP32 y gestionada mediante ESP-IDF 5.3.2. Este canal permite que un teléfono se comunique directamente con el controlador sin utilizar el módem celular ni una red del establecimiento.
 
 %----------------------------------------------------------------------------------------
 
 \section{Bluetooth Low Energy}
 \label{sec:ble}
 
-BLE, sigla de \textit{Bluetooth Low Energy}, es una tecnología inalámbrica de corto alcance orientada al intercambio eficiente de cantidades moderadas de datos \cite{bluetooth:core53}. Su especificación define, entre otros elementos, los procedimientos de descubrimiento y conexión, los roles de los dispositivos y el modelo utilizado para organizar la información intercambiada. La documentación de ESP-IDF 5.3.4 describe el soporte provisto por el ESP32 para implementar estos mecanismos \cite{espressif:esp-idf-ble}. Para este trabajo no resultan relevantes todas las capas del protocolo, sino aquellas que permiten establecer una comunicación directa y segura entre el N150 y un teléfono.
+BLE es una tecnología inalámbrica de corto alcance orientada al intercambio eficiente de cantidades moderadas de datos \cite{bluetooth:core53}. Su especificación define, entre otros elementos, los procedimientos de descubrimiento y conexión, los roles de los dispositivos y el modelo utilizado para organizar la información intercambiada. La documentación de ESP-IDF 5.3.2 describe el soporte provisto por el ESP32 para implementar estos mecanismos \cite{espressif:esp-idf-ble}. Para este trabajo no resultan relevantes todas las capas del protocolo, sino aquellas que permiten establecer una comunicación directa y segura entre el N150 y un teléfono.
 
 \subsection{Adecuación de BLE al N150}
 \label{subsec:seleccion_ble}
 
 Para el desarrollo se requería un canal local que permitiera configurar el controlador, consultar información de diagnóstico y actualizar su firmware aun cuando la heladera estuviera instalada en un sitio sin cobertura celular. También, debía posibilitar el uso de un teléfono como herramienta de soporte, sin incorporar hardware adicional al N150. BLE satisface estos requerimientos porque se encuentra integrado en el ESP32, dispone de soporte en dispositivos móviles y permite descubrir y conectar equipos cercanos sin depender de una infraestructura de red externa.
 
-El alcance acotado de BLE también resulta coherente con las tareas de intervención local, en las que el operador se encuentra próximo a la heladera. El caudal disponible es suficiente para intercambiar parámetros, estados, registros de diagnóstico y bloques de una actualización de firmware. Además, su modelo de servicios y características permite organizar esas operaciones mediante una interfaz común para el controlador y la aplicación móvil.
+El alcance acotado de BLE también resulta coherente con las tareas de intervención local, en las que el operador se encuentra próximo a la heladera. El caudal disponible es suficiente para intercambiar parámetros, estados, registros de diagnóstico y bloques de una actualización de firmware. Además, su modelo de servicios y características, definido por el perfil genérico de atributos (GATT, del inglés, \textit{Generic Attribute Profile}), permite organizar esas operaciones mediante una interfaz común para el controlador y la aplicación móvil.
 
 Frente a la conectividad celular, BLE proporciona acceso cuando no existe cobertura o cuando el enlace remoto no se encuentra disponible. A diferencia de Wi-Fi, no requiere que el controlador se incorpore a una red local ni que se conozcan sus credenciales. Por otra parte, ofrece una sesión de comunicación y un modelo de datos más apropiados para las tareas previstas que una interfaz de proximidad basada en NFC. Bluetooth Classic proporciona un caudal mayor, pero ese beneficio no resulta necesario para el volumen de información de esta aplicación. Por estos motivos, se seleccionó BLE como interfaz local del N150.
 
@@ -89,7 +116,7 @@ La comunicación comienza con la emisión periódica de paquetes de publicidad p
 
 La sesión de soporte local se divide en tres etapas. En la primera, la aplicación identifica el N150 mediante la información incluida en sus paquetes de publicidad. En la segunda, ambos dispositivos establecen la conexión y aplican los mecanismos de seguridad previstos para verificar el acceso. En la tercera, la aplicación descubre la interfaz GATT y ejecuta la operación solicitada. Esta secuencia se utiliza tanto para intervenciones breves, como la consulta de un estado, como para operaciones prolongadas, entre ellas la transferencia de una actualización de firmware.
 
-Una vez establecida la conexión, los datos se intercambian mediante GATT (del inglés, \textit{Generic Attribute Profile}). El N150 funciona como servidor GATT y expone la información y las operaciones disponibles mediante servicios y características. El teléfono funciona como cliente GATT, descubre esa estructura y accede a ella de acuerdo con los permisos definidos.
+Una vez establecida la conexión, los datos se intercambian mediante GATT. El N150 funciona como servidor GATT y expone la información y las operaciones disponibles mediante servicios y características. El teléfono funciona como cliente GATT, descubre esa estructura y accede a ella de acuerdo con los permisos definidos.
 
 Los roles de conexión y los roles GATT describen aspectos diferentes y complementarios. La condición de periférico establece la participación del N150 en el descubrimiento y en la conexión BLE, mientras que la condición de servidor determina que conserva y expone los atributos. De manera análoga, el teléfono actúa como central porque inicia la conexión y como cliente porque solicita operaciones sobre los atributos publicados por el controlador.
 
