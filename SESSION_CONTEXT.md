@@ -10,20 +10,30 @@ secciones 3.1 y 3.2, dedicadas a la arquitectura y al diseño por módulos.
 
 - Usar redacción impersonal.
 - Usar presente para describir el sistema y pasado para el trabajo realizado.
-- No incluir código fuente en la memoria; usar diagramas y tablas cuando aporte
-  claridad. Excepción aprobada: listados breves con `lstlisting` (estilo en el
-  preámbulo, caption "Código"), como el fragmento de la tabla GATT en 3.5.2
-  (`lst:tabla_gatt`). Nunca capturas de pantalla de código.
+- No incluir código fuente en la memoria (corrección del docente: ni siquiera
+  listados breves; usar diagramas que representen la funcionalidad).
 - Usar `\texttt{}` solo para identificadores literales, archivos, módulos y
   variables.
-- Escribir anglicismos generales en cursiva, por ejemplo `\textit{advertising}`.
-  Excepción (corrección del docente): "callback(s)" va sin cursiva.
+- Cursiva: solo para anglicismos que el docente no objetó. Por corrección del
+  docente van SIN cursiva: callback(s), advertising, data, scan response,
+  scan request, display, handle, bonding, hardware, hash, nonce(s).
 - Desarrollar cada sigla la primera vez que aparece, con el formato
   "nombre en español (SIGLA, del inglés, \textit{English name})", y luego usar
   solo la sigla.
-- Términos alineados con la figura `flujoAdvDatos.jpg` (draw.io):
-  `\textit{scan response}`, `\textit{scan request}`, `\textit{display} virtual`,
-  "subsistema de `\textit{data}`".
+- Términos alineados con la figura `flujoAdvDatos.jpg` (draw.io): scan response,
+  scan request, display virtual, "subsistema de data".
+- Tablas con el formato de la plantilla: encabezados en negrita y solo
+  \toprule, \midrule (bajo el encabezado) y \bottomrule; sin líneas entre filas
+  (para separar grupos, \addlinespace).
+- Epígrafes breves; la descripción de una figura va en el párrafo que la
+  menciona, no en el epígrafe.
+- Créditos de imágenes ("Imagen cedida por Sensify S. A. S.") como nota al pie,
+  no en el epígrafe.
+- No usar negritas en el texto ni en listas.
+- Las figuras deben quedar dentro del apartado donde se mencionan (corrección
+  del docente). Resolverlo de forma puntual, con `\FloatBarrier` antes del
+  apartado siguiente (como en 3.7.2, 3.7.3 y 3.7.4), y NO con una barrera
+  global: el usuario no quiere cambios en el resto del documento.
 - Denominar CloudLogic como "lógica de nube y conectividad remota".
 - Excluir de la memoria y los diagramas `ble-Scanner`, escaneo pasivo, `BLINK`
   y señalización visual.

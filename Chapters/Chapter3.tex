@@ -14,7 +14,7 @@ El alcance del trabajo se limita a \texttt{sfy-BLE}. Los subsistemas que gestion
 
 La arquitectura general se organiza alrededor de \texttt{sfy-BLE}, destacado como el componente desarrollado, y de los módulos preexistentes del N150. La pila NimBLE provee el acceso a la radio y a los mecanismos BLE sobre los que se apoya \texttt{sfy-BLE}. A través de esta pila, el componente anuncia el equipo, atiende la conexión del cliente y administra la interfaz GATT.
 
-Dentro de \texttt{sfy-BLE}, \texttt{ble-Main} administra el ciclo de vida de NimBLE. \texttt{ble-Gap} configura el \textit{advertising} y la conexión, mientras que \texttt{ble-Gatt} define los servicios y las características mediante los que se intercambian las solicitudes y respuestas con el cliente. Estos módulos constituyen la interfaz de comunicación local y coordinan el acceso a los módulos internos de procesamiento.
+Dentro de \texttt{sfy-BLE}, \texttt{ble-Main} administra el ciclo de vida de NimBLE. \texttt{ble-Gap} configura el advertising y la conexión, mientras que \texttt{ble-Gatt} define los servicios y las características mediante los que se intercambian las solicitudes y respuestas con el cliente. Estos módulos constituyen la interfaz de comunicación local y coordinan el acceso a los módulos internos de procesamiento.
 
 La figura \ref{fig:arquitectura_sistema} presenta los bloques principales y el flujo de procesamiento entre ellos. El recuadro exterior delimita el firmware del N150 y deja fuera al cliente BLE, que no forma parte del desarrollo. El recuadro de trazo grueso agrupa los módulos de \texttt{sfy-BLE}, y los bloques ubicados fuera de él corresponden a componentes preexistentes. Las líneas continuas indican intercambios directos y las punteadas, integraciones mediante callbacks.
 
@@ -33,7 +33,7 @@ La figura \ref{fig:arquitectura_sistema} presenta los bloques principales y el f
 
 La gestión de parámetros conserva, por lo tanto, las validaciones y el flujo de actualización que ya utilizaba el N150. De manera equivalente, las órdenes de control se resuelven mediante las rutinas existentes de prueba de los actuadores. Los comandos que deben alcanzar la infraestructura remota se entregan a la lógica de nube y conectividad remota para que sigan el mismo camino de procesamiento que los comandos recibidos por los medios de conectividad habituales.
 
-El segundo mecanismo corresponde a dependencias directas del componente. \texttt{sfy-BLE} utiliza el subsistema de \textit{data} para obtener el último registro de telemetría y transferir el histórico almacenado. También se vincula con el sistema de registros para publicar mensajes generales y la salida de terminal durante una intervención de soporte. Estas dependencias forman parte de las operaciones internas de transferencia y depuración del módulo, por lo que no se exponen mediante callbacks del firmware principal.
+El segundo mecanismo corresponde a dependencias directas del componente. \texttt{sfy-BLE} utiliza el subsistema de data para obtener el último registro de telemetría y transferir el histórico almacenado. También se vincula con el sistema de registros para publicar mensajes generales y la salida de terminal durante una intervención de soporte. Estas dependencias forman parte de las operaciones internas de transferencia y depuración del módulo, por lo que no se exponen mediante callbacks del firmware principal.
 
 La diferenciación entre ambos mecanismos responde al límite de responsabilidades definido para el desarrollo. Los callbacks se emplean cuando la operación pertenece a la lógica de negocio del N150 y debe permanecer controlada por el firmware principal. Las dependencias directas se emplean para los servicios que \texttt{sfy-BLE} necesita utilizar durante su funcionamiento interno. Esta decisión mantiene al componente desacoplado de las decisiones de control y conectividad, sin impedir el acceso a los datos y registros necesarios para la interfaz local.
 
@@ -58,14 +58,14 @@ La implementación se dividió en módulos con responsabilidades acotadas. La mo
 \label{tab:modulos_ble}
 \begin{tabular}{p{0.25\textwidth} p{0.65\textwidth}}
 \toprule
-Módulo & Responsabilidad principal \\
+\textbf{Módulo} & \textbf{Responsabilidad principal} \\
 \midrule
 \texttt{ble-Main} & Administra el ciclo de vida de NimBLE, la tarea del host y la sincronización de los recursos compartidos. \\
-\texttt{ble-Gap} & Configura el nombre, el \textit{advertising}, la conexión, la desconexión y la unidad máxima de transmisión (MTU, del inglés, \textit{Maximum Transmission Unit}). \\
+\texttt{ble-Gap} & Configura el nombre, el advertising, la conexión, la desconexión y la unidad máxima de transmisión (MTU, del inglés, \textit{Maximum Transmission Unit}). \\
 \texttt{ble-Gatt} & Define servicios y características, procesa accesos y transmite notificaciones e indicaciones. \\
 \texttt{ble-rcvMsg} & Reensambla mensajes fragmentados y valida secuencia, longitud y CRC32. \\
 \texttt{ble-Security} & Implementa autenticación, claves de sesión, contadores y cifrado AES-256-GCM. \\
-\texttt{ble-Data} & Genera metadatos, diagnóstico e histórico, y administra los datos de \textit{advertising}. \\
+\texttt{ble-Data} & Genera metadatos, diagnóstico e histórico, y administra los datos de advertising. \\
 \texttt{ble-Params} & Vincula las solicitudes de lectura y escritura con el gestor de parámetros. \\
 \texttt{ble-Commands} & Adapta los comandos locales y los destinados a la lógica de nube y conectividad remota. \\
 \texttt{ble-Logs} & Publica registros generales y la salida de terminal para soporte y depuración. \\
@@ -77,13 +77,13 @@ Módulo & Responsabilidad principal \\
 
 \texttt{ble-Main} administra el ciclo de vida de la pila NimBLE mediante cuatro estados: detenido, iniciando, iniciado y deteniendo. Las transiciones se protegen con un mutex recursivo compartido con \texttt{ble-Params}. El carácter recursivo permite que un cambio del modo de operación, que ya retiene el mutex, invoque el inicio o la detención de la pila sin bloquearse a sí mismo. Las solicitudes que coinciden con el estado actual se resuelven sin efectos, mientras que las que llegan durante una transición en curso se rechazan, de modo que no se reinicializan recursos que puedan estar en uso.
 
-La inicialización recibe el serial del equipo, prepara el material criptográfico utilizado por \texttt{ble-Security} y, si el parámetro \texttt{APP\_LINK} no deshabilita la interfaz, inicia la pila. El inicio construye el nombre publicado a partir del serial, inicializa NimBLE y los servicios del perfil de acceso genérico (GAP, del inglés, \textit{Generic Access Profile}) y GATT, registra los callbacks del host y crea una tarea de FreeRTOS dedicada a ejecutar el host BLE. Esta tarea separa el procesamiento de eventos BLE del flujo principal del firmware. Si alguna de estas etapas falla, se libera lo ya inicializado y el estado vuelve a detenido. El \textit{advertising} no comienza durante el inicio, sino cuando el host se sincroniza con el controlador. En ese momento se fija una MTU preferida de 256 bytes y se delega a \texttt{ble-Gap} la configuración del \textit{advertising}.
+La inicialización recibe el serial del equipo, prepara el material criptográfico utilizado por \texttt{ble-Security} y, si el parámetro \texttt{APP\_LINK} no deshabilita la interfaz, inicia la pila. El inicio construye el nombre publicado a partir del serial, inicializa NimBLE y los servicios del perfil de acceso genérico (GAP, del inglés, \textit{Generic Access Profile}) y GATT, registra los callbacks del host y crea una tarea de FreeRTOS dedicada a ejecutar el host BLE. Esta tarea separa el procesamiento de eventos BLE del flujo principal del firmware. Si alguna de estas etapas falla, se libera lo ya inicializado y el estado vuelve a detenido. El advertising no comienza durante el inicio, sino cuando el host se sincroniza con el controlador. En ese momento se fija una MTU preferida de 256 bytes y se delega a \texttt{ble-Gap} la configuración del advertising.
 
-La detención sigue el orden inverso. Primero se detiene el \textit{advertising} y se cierra la conexión activa, luego se solicita la finalización del host y se espera que su tarea termine antes de liberar la pila. Si la tarea no finaliza dentro del tiempo previsto o la liberación falla, el módulo conserva el estado iniciado y no informa una detención incompleta como exitosa. Los parámetros con los que se configura la pila se describen en la sección \ref{sec:configuracion_ble}.
+La detención sigue el orden inverso. Primero se detiene el advertising y se cierra la conexión activa, luego se solicita la finalización del host y se espera que su tarea termine antes de liberar la pila. Si la tarea no finaliza dentro del tiempo previsto o la liberación falla, el módulo conserva el estado iniciado y no informa una detención incompleta como exitosa. Los parámetros con los que se configura la pila se describen en la sección \ref{sec:configuracion_ble}.
 
 \subsection{\texttt{ble-Gap} y \texttt{ble-Gatt}}
 
-\texttt{ble-Gap} concentra los procedimientos de descubrimiento y conexión. Construye el nombre del equipo a partir de su serial, configura los datos de \textit{advertising} y responde a los eventos de conexión, desconexión y negociación de MTU. Al finalizar una conexión, restablece el estado necesario para que el controlador vuelva a estar disponible para una nueva intervención local. Las decisiones de diseño de esta capa se describen en la sección \ref{sec:diseno_gap}.
+\texttt{ble-Gap} concentra los procedimientos de descubrimiento y conexión. Construye el nombre del equipo a partir de su serial, configura los datos de advertising y responde a los eventos de conexión, desconexión y negociación de MTU. Al finalizar una conexión, restablece el estado necesario para que el controlador vuelva a estar disponible para una nueva intervención local. Las decisiones de diseño de esta capa se describen en la sección \ref{sec:diseno_gap}.
 
 \texttt{ble-Gatt} define la interfaz de servicios y características utilizada por el cliente BLE. Sus manejadores reciben las operaciones de lectura, escritura y suscripción, y coordinan la transmisión de notificaciones e indicaciones. También constituye el punto de integración con \texttt{ble-rcvMsg}, \texttt{ble-Security} y los adaptadores funcionales. Esta división permite modificar la estructura GATT sin incorporar en sus manejadores la lógica de reensamblado, autenticación o acceso a los subsistemas del N150. Las decisiones de diseño de esta capa se describen en la sección \ref{sec:diseno_gatt}.
 
@@ -95,7 +95,7 @@ La detención sigue el orden inverso. Primero se detiene el \textit{advertising}
 
 \subsection{\texttt{ble-Data} y \texttt{ble-Params}}
 
-\texttt{ble-Data} concentra las operaciones de consulta. Genera metadatos del equipo, un diagnóstico de conectividad y la transferencia de información histórica almacenada. Los metadatos y el diagnóstico se obtienen mediante callbacks, mientras que el histórico y el último registro de telemetría se integran con el subsistema de \textit{data}. El último registro también se entrega a \texttt{ble-Gap} para el modo de \textit{advertising} con datos.
+\texttt{ble-Data} concentra las operaciones de consulta. Genera metadatos del equipo, un diagnóstico de conectividad y la transferencia de información histórica almacenada. Los metadatos y el diagnóstico se obtienen mediante callbacks, mientras que el histórico y el último registro de telemetría se integran con el subsistema de data. El último registro también se entrega a \texttt{ble-Gap} para el modo de advertising con datos.
 
 \texttt{ble-Params} atiende la consulta y el procesamiento de cambios de configuración. Ambas operaciones se delegan mediante callbacks al gestor de parámetros ya existente. Luego de una modificación, el firmware conserva su mecanismo habitual de reporte de cambios, de modo que la interfaz local no introduce un flujo de configuración paralelo.
 
@@ -117,7 +117,7 @@ ESP-IDF agrupa la configuración de Bluetooth en un conjunto de opciones que se 
 
 ESP-IDF ofrece dos implementaciones del host Bluetooth \cite{espressif:esp-idf-ble}. Bluedroid, la opción por defecto, admite tanto Bluetooth clásico como BLE. NimBLE implementa únicamente BLE y requiere menos memoria y menos espacio de programa. También es posible habilitar solo el controlador, para los casos en que el host se ejecuta en otro procesador. Como la interfaz local utiliza exclusivamente BLE, se reemplazó Bluedroid por NimBLE. De este modo, el firmware no incorpora el soporte de Bluetooth clásico, que no se utiliza y ocuparía recursos compartidos con el resto de los subsistemas del N150.
 
-El controlador del ESP32 puede operar en modo BLE, en modo Bluetooth clásico o en modo dual. Se mantuvo el valor por defecto, que habilita solo BLE y es coherente con la pila elegida. El ESP32 implementa la especificación Bluetooth 4.2 \cite{espressif:esp32}, por lo que ESP-IDF no habilita las funciones de Bluetooth 5, como el \textit{advertising} extendido. En consecuencia, cada paquete de \textit{advertising} del N150 admite como máximo 31 bytes, restricción que condiciona el diseño de la capa GAP.
+El controlador del ESP32 puede operar en modo BLE, en modo Bluetooth clásico o en modo dual. Se mantuvo el valor por defecto, que habilita solo BLE y es coherente con la pila elegida. El ESP32 implementa la especificación Bluetooth 4.2 \cite{espressif:esp32}, por lo que ESP-IDF no habilita las funciones de Bluetooth 5, como el advertising extendido. En consecuencia, cada paquete de advertising del N150 admite como máximo 31 bytes, restricción que condiciona el diseño de la capa GAP.
 
 \subsection{Opciones del host NimBLE}
 \label{subsec:config_nimble}
@@ -132,11 +132,11 @@ Las opciones de NimBLE abarcan, entre otras, los roles habilitados, la cantidad 
 \setlength{\tabcolsep}{4pt}
 \begin{tabular}{L{0.24\textwidth} L{0.15\textwidth} L{0.17\textwidth} L{0.32\textwidth}}
 \toprule
-Opción & Valor por defecto & Valor adoptado & Motivo \\
+\textbf{Opción} & \textbf{Valor por defecto} & \textbf{Valor adoptado} & \textbf{Motivo} \\
 \midrule
 Conexiones simultáneas & 3 & 1 & La interfaz local atiende a un único teléfono. \\
 Rol periférico & Habilitado & Habilitado & Permite anunciar el equipo y aceptar conexiones. \\
-Roles central y \textit{broadcaster} & Habilitados & Deshabilitados & El equipo no inicia conexiones y el \textit{advertising} conectable forma parte del rol periférico. \\
+Roles central y \textit{broadcaster} & Habilitados & Deshabilitados & El equipo no inicia conexiones y el advertising conectable forma parte del rol periférico. \\
 Bloques de memoria del primer grupo & 12 $\times$ 256~B & 12 $\times$ 256~B & Resultan suficientes para el tráfico de la interfaz local. \\
 Bloques de memoria del segundo grupo & 24 $\times$ 320~B & Ninguno & Los mensajes extensos se fragmentan en la capa de aplicación. \\
 Búferes de datos entrantes & 24 $\times$ 255~B & 8 $\times$ 255~B & El tráfico entrante desde el teléfono es reducido. \\
@@ -166,7 +166,7 @@ Para resolverlo, se habilitó la PSRAM y se configuró NimBLE para asignar su me
 \section{Diseño de la capa GAP}
 \label{sec:diseno_gap}
 
-La capa GAP determina cómo el N150 se da a conocer a los teléfonos cercanos y cómo se establece la conexión. Su diseño partió de dos condiciones definidas en la sección \ref{sec:configuracion_ble}: el equipo actúa solo como periférico y cada paquete de \textit{advertising} admite como máximo 31 bytes. Dentro de ese marco, se buscó que el equipo pudiera encontrarse en cualquier momento sin intervención sobre el controlador, que su comportamiento pudiera adaptarse a cada cliente y que parte de su información pudiera consultarse sin establecer una conexión.
+La capa GAP determina cómo el N150 se da a conocer a los teléfonos cercanos y cómo se establece la conexión. Su diseño partió de dos condiciones definidas en la sección \ref{sec:configuracion_ble}: el equipo actúa solo como periférico y cada paquete de advertising admite como máximo 31 bytes. Dentro de ese marco, se buscó que el equipo pudiera encontrarse en cualquier momento sin intervención sobre el controlador, que su comportamiento pudiera adaptarse a cada cliente y que parte de su información pudiera consultarse sin establecer una conexión.
 
 \subsection{Identificación del equipo}
 \label{subsec:gap_identificacion}
@@ -175,26 +175,26 @@ El equipo se identifica mediante su dirección BLE y su nombre. Como dirección 
 
 El nombre publicado se forma con el prefijo \texttt{sfy} seguido del serial del equipo. El prefijo permite que la aplicación filtre los controladores de Sensify entre todos los dispositivos BLE presentes en el lugar, y el serial permite que el técnico reconozca el equipo sobre el que debe intervenir sin necesidad de conectarse. El nombre se asigna durante el inicio de la pila y reemplaza el nombre genérico configurado en ESP-IDF.
 
-\subsection{Contenido del \textit{advertising}}
+\subsection{Contenido del advertising}
 \label{subsec:gap_contenido}
 
-El N150 publica paquetes de \textit{advertising} conectables y no dirigidos, con descubrimiento general e indicación de que no admite Bluetooth clásico. El \textit{advertising} no tiene tiempo límite. Se mantiene mientras no haya un teléfono conectado y se reanuda cuando la conexión finaliza, cuando un intento de conexión falla o cuando la pila informa su interrupción. De este modo, el equipo puede descubrirse en cualquier momento sin que el técnico deba realizar una acción previa sobre el controlador.
+El N150 publica paquetes de advertising conectables y no dirigidos, con descubrimiento general e indicación de que no admite Bluetooth clásico. El advertising no tiene tiempo límite. Se mantiene mientras no haya un teléfono conectado y se reanuda cuando la conexión finaliza, cuando un intento de conexión falla o cuando la pila informa su interrupción. De este modo, el equipo puede descubrirse en cualquier momento sin que el técnico deba realizar una acción previa sobre el controlador.
 
-El límite de 31 bytes por paquete fue una de las principales dificultades del diseño de esta capa. Como el ESP32 implementa Bluetooth 4.2, no dispone del \textit{advertising} extendido de Bluetooth 5, que admite paquetes de mayor tamaño. En el paquete principal, los indicadores de descubrimiento ocupan 3 bytes y el campo con el registro de telemetría, 26 bytes. Quedan entonces solo 2 bytes libres, insuficientes para incluir también el nombre del equipo.
+El límite de 31 bytes por paquete fue una de las principales dificultades del diseño de esta capa. Como el ESP32 implementa Bluetooth 4.2, no dispone del advertising extendido de Bluetooth 5, que admite paquetes de mayor tamaño. En el paquete principal, los indicadores de descubrimiento ocupan 3 bytes y el campo con el registro de telemetría, 26 bytes. Quedan entonces solo 2 bytes libres, insuficientes para incluir también el nombre del equipo.
 
-Para resolverlo, se utilizó el \textit{scan response}, un segundo paquete de hasta 31 bytes que el periférico entrega cuando el teléfono lo solicita mediante un \textit{scan request} durante el escaneo. El contenido se repartió entre ambos paquetes, como resume la tabla \ref{tab:contenido_adv}. El paquete principal transporta los indicadores de descubrimiento y, cuando el modo de operación lo requiere, los datos de telemetría. El \textit{scan response} transporta solo el nombre completo, de modo que su longitud no reduce el espacio disponible para los datos. El teléfono recibe ambos paquetes y los asocia al mismo equipo mediante su dirección.
+Para resolverlo, se utilizó el scan response, un segundo paquete de hasta 31 bytes que el periférico entrega cuando el teléfono lo solicita mediante un scan request durante el escaneo. El contenido se repartió entre ambos paquetes, como resume la tabla \ref{tab:contenido_adv}. El paquete principal transporta los indicadores de descubrimiento y, cuando el modo de operación lo requiere, los datos de telemetría. El scan response transporta solo el nombre completo, de modo que su longitud no reduce el espacio disponible para los datos. El teléfono recibe ambos paquetes y los asocia al mismo equipo mediante su dirección.
 
 \begin{table}[htbp]
 \centering
-\caption{Distribución del contenido del \textit{advertising}.}
+\caption{Distribución del contenido del advertising.}
 \label{tab:contenido_adv}
 \begin{tabular}{L{0.22\textwidth} L{0.30\textwidth} L{0.12\textwidth} L{0.23\textwidth}}
 \toprule
-Paquete & Campo & Tamaño & Presencia \\
+\textbf{Paquete} & \textbf{Campo} & \textbf{Tamaño} & \textbf{Presencia} \\
 \midrule
-\textit{Advertising} & Indicadores de descubrimiento & 3~B & Siempre. \\
+Advertising & Indicadores de descubrimiento & 3~B & Siempre. \\
  & Datos específicos del fabricante & 26~B & Solo en el modo con datos. \\
-\textit{Scan response} & Nombre completo del equipo & Variable & Según el modo. \\
+Scan response & Nombre completo del equipo & Variable & Según el modo. \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -210,11 +210,11 @@ Las instalaciones del N150 no tienen todas las mismas necesidades. Por este moti
 \label{tab:modos_app_link}
 \begin{tabular}{L{0.26\textwidth} L{0.22\textwidth} L{0.20\textwidth} L{0.19\textwidth}}
 \toprule
-Modo & Datos en el \textit{advertising} & Nombre en el \textit{scan response} & Intervalo de \textit{advertising} \\
+\textbf{Modo} & \textbf{Datos en el advertising} & \textbf{Nombre en el scan response} & \textbf{Intervalo de advertising} \\
 \midrule
 Deshabilitado & \multicolumn{3}{l}{Pila BLE detenida.} \\
-\textit{Advertising} con datos y conexión & Último registro de telemetría & Sí & 500--510~ms \\
-\textit{Advertising} y conexión (predeterminado) & No & Sí & 500--510~ms \\
+Advertising con datos y conexión & Último registro de telemetría & Sí & 500--510~ms \\
+Advertising y conexión (predeterminado) & No & Sí & 500--510~ms \\
 Solo conexión & No & No & 2000--3000~ms \\
 \bottomrule
 \end{tabular}
@@ -222,41 +222,41 @@ Solo conexión & No & No & 2000--3000~ms \\
 
 El modo predeterminado corresponde al uso más general: el equipo se anuncia con su nombre cada medio segundo, lo que permite que la aplicación lo encuentre rápidamente y que el técnico se conecte. El modo de solo conexión mantiene el equipo conectable, pero no publica su nombre y espacia los anuncios entre 2 y 3~s. Así se reduce su visibilidad para quienes exploran los dispositivos cercanos y disminuye la actividad de la radio. El modo deshabilitado detiene la pila para las instalaciones que no requieren la interfaz local.
 
-Un cambio de modo se aplica sin reiniciar el equipo. Si se deshabilita la interfaz, se detiene la pila; si se habilita, se inicia; y si se pasa de un modo activo a otro, solo se actualiza el contenido del \textit{advertising}, sin interrumpir la publicación.
+Un cambio de modo se aplica sin reiniciar el equipo. Si se deshabilita la interfaz, se detiene la pila; si se habilita, se inicia; y si se pasa de un modo activo a otro, solo se actualiza el contenido del advertising, sin interrumpir la publicación.
 
-\subsection{\textit{Advertising} con datos}
+\subsection{Advertising con datos}
 \label{subsec:gap_adv_datos}
 
-La conexión con el equipo requiere que el técnico la inicie desde la aplicación y que se complete la autenticación antes de acceder a la información. Este proceso resulta adecuado para configurar o diagnosticar un controlador en particular, pero es lento cuando solo se necesita una visión rápida del estado de varios equipos. El modo con datos se diseñó para ese caso. Al incluir la última medición en el \textit{advertising}, la aplicación puede mostrar el estado de todas las heladeras cercanas con solo explorar el entorno, a modo de \textit{display} virtual, sin que el técnico deba conectarse, autenticarse ni interactuar con cada equipo. La figura \ref{fig:display_virtual} muestra el \textit{display} virtual de una heladera en la aplicación móvil. En él, las temperaturas, el estado de la puerta y de las salidas, la tensión medida, las alarmas, el tipo de red y la intensidad de señal provienen del \textit{advertising}; los valores restantes no forman parte de él.
+La conexión con el equipo requiere que el técnico la inicie desde la aplicación y que se complete la autenticación antes de acceder a la información. Este proceso resulta adecuado para configurar o diagnosticar un controlador en particular, pero es lento cuando solo se necesita una visión rápida del estado de varios equipos. El modo con datos se diseñó para ese caso. Al incluir la última medición en el advertising, la aplicación puede mostrar el estado de todas las heladeras cercanas con solo explorar el entorno, a modo de display virtual, sin que el técnico deba conectarse, autenticarse ni interactuar con cada equipo. La figura \ref{fig:display_virtual} muestra el display virtual de una heladera en la aplicación móvil. En él, las temperaturas, el estado de la puerta y de las salidas, la tensión medida, las alarmas, el tipo de red y la intensidad de señal provienen del advertising; los valores restantes no forman parte de él.
 
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=0.38\textwidth]{Figures/displayVirtual.png}
-\caption{\textit{Display} virtual de una heladera en la aplicación móvil.}
+\caption{Display virtual de una heladera en la aplicación móvil.}
 \label{fig:display_virtual}
 \end{figure}
 
-Los datos se transmiten en el campo de datos específicos del fabricante. Su contenido es el último registro de telemetría, que \texttt{ble-Data} obtiene del subsistema de \textit{data} y codifica con el mismo formato binario que el equipo utiliza para enviar la telemetría a la plataforma de Sensify. El registro incluye el tipo de red y la intensidad de señal, las temperaturas interna, del evaporador y del condensador, la tensión de alimentación, la marca de tiempo, indicadores del estado de la puerta, de las salidas y de las alarmas, y una suma de verificación. Codificado, ocupa 23 bytes, por lo que entra completo en el campo de 24 bytes disponible luego de los indicadores de descubrimiento. La reutilización de este formato evitó definir una codificación adicional para la interfaz local.
+Los datos se transmiten en el campo de datos específicos del fabricante. Su contenido es el último registro de telemetría, que \texttt{ble-Data} obtiene del subsistema de data y codifica con el mismo formato binario que el equipo utiliza para enviar la telemetría a la plataforma de Sensify. El registro incluye el tipo de red y la intensidad de señal, las temperaturas interna, del evaporador y del condensador, la tensión de alimentación, la marca de tiempo, indicadores del estado de la puerta, de las salidas y de las alarmas, y una suma de verificación. Codificado, ocupa 23 bytes, por lo que entra completo en el campo de 24 bytes disponible luego de los indicadores de descubrimiento. La reutilización de este formato evitó definir una codificación adicional para la interfaz local.
 
-El contenido se actualiza cada vez que se inicia el \textit{advertising} y cada vez que se modifica sin detenerlo. En ambos casos, \texttt{ble-Gap} solicita el registro más reciente a \texttt{ble-Data} y reemplaza el campo solo si la información cambió.
+El contenido se actualiza cada vez que se inicia el advertising y cada vez que se modifica sin detenerlo. En ambos casos, \texttt{ble-Gap} solicita el registro más reciente a \texttt{ble-Data} y reemplaza el campo solo si la información cambió.
 
 La figura \ref{fig:flujo_adv_datos} resume el flujo completo del modo con datos, desde la obtención del registro hasta su visualización en la aplicación móvil.
 
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=0.85\textwidth]{Figures/flujoAdvDatos.jpg}
-\caption{Flujo del \textit{advertising} con datos.}
+\caption{Flujo del advertising con datos.}
 \label{fig:flujo_adv_datos}
 \end{figure}
 
 \subsection{Gestión de la conexión}
 \label{subsec:gap_conexion}
 
-El equipo admite una única conexión, de modo que un solo teléfono opera el N150 por vez. Al establecerse la conexión, el \textit{advertising} se detiene, por lo que el controlador deja de aparecer para otros teléfonos hasta que la sesión finaliza.
+El equipo admite una única conexión, de modo que un solo teléfono opera el N150 por vez. Al establecerse la conexión, el advertising se detiene, por lo que el controlador deja de aparecer para otros teléfonos hasta que la sesión finaliza.
 
 Luego de conectarse, el N150 solicita conservar el intervalo de conexión y el tiempo de supervisión propuestos por el teléfono, con una latencia de periférico de tres eventos. La latencia permite que el equipo omita hasta tres eventos de conexión consecutivos cuando no tiene datos para transmitir. De este modo, se estabiliza la conexión y se reduce la actividad de la radio sin modificar los tiempos negociados por el teléfono. La MTU preferida es de 256 bytes, y el valor efectivo surge de la negociación que el teléfono realiza al conectarse.
 
-Al finalizar la conexión, \texttt{ble-Gap} descarta la sesión segura y cualquier mensaje recibido de forma parcial, y reanuda el \textit{advertising} salvo que la interfaz haya sido deshabilitada. Esta limpieza garantiza que cada sesión comience desde un estado conocido y que la información de una sesión anterior no se reutilice en la siguiente.
+Al finalizar la conexión, \texttt{ble-Gap} descarta la sesión segura y cualquier mensaje recibido de forma parcial, y reanuda el advertising salvo que la interfaz haya sido deshabilitada. Esta limpieza garantiza que cada sesión comience desde un estado conocido y que la información de una sesión anterior no se reutilice en la siguiente.
 
 %----------------------------------------------------------------------------------------
 
@@ -278,24 +278,24 @@ La interfaz se organiza en cuatro servicios primarios: control, datos, parámetr
 \setlength{\tabcolsep}{4pt}
 \begin{tabular}{L{0.12\textwidth} L{0.27\textwidth} L{0.14\textwidth} L{0.37\textwidth}}
 \toprule
-Servicio & Característica & Propiedad & Uso \\
+\textbf{Servicio} & \textbf{Característica} & \textbf{Propiedad} & \textbf{Uso} \\
 \midrule
 Control & \texttt{AUTH-SYNC} & Lectura y escritura & Establecimiento de la sesión segura. \\
  & \texttt{COMMAND-GET} & Escritura & Comandos de control local. \\
  & \texttt{COMMANDS-RESPONSE} & Notificación & Estado de los comandos de control. \\
  & \texttt{CLOUDCOMMANDS-GET} & Escritura & Comandos para la lógica de nube y conectividad remota. \\
  & \texttt{LOG-CONTROL} & Notificación & Eventos y estado de procesos. \\
-\midrule
+\addlinespace
 Datos & \texttt{TIME-SYNC} & Escritura & Sincronización de fecha y hora. \\
  & \texttt{COMMAND-DATA} & Escritura & Solicitudes de metadatos, diagnóstico, histórico y parámetros. \\
  & \texttt{METADATA-READ} & Indicación & Metadatos del equipo. \\
  & \texttt{HISTORY-SEND} & Indicación & Registros históricos. \\
  & \texttt{DIAGNOSIS-READ} & Indicación & Diagnóstico de conectividad. \\
  & \texttt{READ-STATUS} & Notificación & Estado de las lecturas en curso. \\
-\midrule
+\addlinespace
 Parámetros & \texttt{PARAMETROS-GET} & Escritura & Envío de cambios de configuración. \\
  & \texttt{PARAMETROS-RESPONSE} & Indicación & Respuesta del gestor de parámetros. \\
-\midrule
+\addlinespace
 Depuración & \texttt{LOG-SEND} & Notificación & Registros generales. \\
  & \texttt{LOG-TERMINAL} & Notificación & Salida de terminal. \\
 \bottomrule
@@ -311,36 +311,9 @@ La estructura GATT se diseñó para que incorporar un servicio o una caracterís
 
 La primera es la definición declarativa de la interfaz. Los servicios y las características se describen en una única tabla, en la que cada característica es una entrada con su identificador, sus propiedades y la función que atiende sus accesos. NimBLE recorre esa tabla durante el inicio y registra la estructura completa, por lo que agregar una característica consiste en agregar una entrada.
 
-El código \ref{lst:tabla_gatt} muestra un fragmento de la tabla con el servicio de datos y dos de sus características. Cada característica se define con su identificador, la función que atiende sus accesos, sus propiedades y la variable en la que NimBLE guarda su \textit{handle}.
-\begin{lstlisting}[float=!htbp, caption={Fragmento de la tabla de servicios GATT.}, label=lst:tabla_gatt]
-static const struct ble_gatt_svc_def gatt_services[] = {
-    {   /* Servicio de datos */
-        .type = BLE_GATT_SVC_TYPE_PRIMARY,
-        .uuid = &data_svc_uuid.u,
-        .characteristics = (struct ble_gatt_chr_def[]) {
-            {   /* COMMAND-DATA: solicitudes de la aplicación */
-                .uuid       = &commandData_chr_uuid.u,
-                .access_cb  = commandData_access_cb,
-                .flags      = BLE_GATT_CHR_F_WRITE,
-                .val_handle = &commandData_handle,
-            },
-            {   /* METADATA-READ: respuesta por indicación */
-                .uuid       = &metadataRead_chr_uuid.u,
-                .access_cb  = metadataRead_access_cb,
-                .flags      = BLE_GATT_CHR_F_INDICATE,
-                .val_handle = &g_metadataRead.attr_handle,
-            },
-            { 0 },  /* fin de las características */
-        }
-    },
-    /* ... servicios de control, parámetros y depuración ... */
-    { 0 },  /* fin de los servicios */
-};
-\end{lstlisting}
-
 La segunda es un esquema de identificadores con base común. Los servicios y las características se identifican mediante identificadores únicos universales (UUID, del inglés, \textit{Universally Unique Identifier}) de 128 bits que comparten una base propia de Sensify y difieren solo en el primer byte. Dentro de ese byte, la parte alta identifica el servicio y la parte baja, la característica: el servicio de control utiliza el valor \texttt{0xF0} y sus características, los valores \texttt{0xF1} a \texttt{0xF5}. Un servicio nuevo toma el siguiente prefijo libre y una característica nueva, el siguiente valor dentro de su servicio.
 
-La tercera es la separación entre la definición de una característica y su mecanismo de transmisión. Las indicaciones y las notificaciones se gestionan mediante dos mecanismos genéricos, descritos en la sección \ref{subsec:gatt_transmision}, que resuelven la suscripción, la fragmentación, los reintentos y el control de tasa. Cada característica que transmite datos solo declara un contexto con la función que entrega el próximo mensaje. En la tabla de servicios, el \textit{handle} de esa característica se guarda dentro de su contexto, como ocurre con \texttt{g\_metadataRead} en el código \ref{lst:tabla_gatt}, lo que la vincula con el mecanismo correspondiente. La suscripción también se atiende de forma genérica: el manejador identifica la característica por su \textit{handle} y actualiza su contexto, sin lógica específica para cada caso.
+La tercera es la separación entre la definición de una característica y su mecanismo de transmisión. Las indicaciones y las notificaciones se gestionan mediante dos mecanismos genéricos, descritos en la sección \ref{subsec:gatt_transmision}, que resuelven la suscripción, la fragmentación, los reintentos y el control de tasa. Cada característica que transmite datos solo declara un contexto con la función que entrega el próximo mensaje. En la tabla de servicios, el handle de esa característica se guarda dentro de su contexto, lo que la vincula con el mecanismo correspondiente. La suscripción también se atiende de forma genérica: el manejador identifica la característica por su handle y actualiza su contexto, sin lógica específica para cada caso.
 
 La cuarta es el uso de comandos binarios sobre características compartidas, descritos en la sección \ref{subsec:gatt_comandos}. Una operación nueva sobre un servicio existente puede incorporarse como un nuevo código de comando, sin crear una característica adicional.
 
@@ -356,16 +329,16 @@ Las solicitudes breves se envían como comandos binarios: un código de 2 bytes 
 \small
 \begin{tabular}{L{0.14\textwidth} L{0.36\textwidth} L{0.38\textwidth}}
 \toprule
-Código & Comando & Operación \\
+\textbf{Código} & \textbf{Comando} & \textbf{Operación} \\
 \midrule
 \texttt{0x0001} & \texttt{CMD\_METADATA\_READ} & Lectura de metadatos. \\
 \texttt{0x0002} & \texttt{CMD\_CONNECTIVITY\_READ} & Lectura del diagnóstico de conectividad. \\
-\midrule
+\addlinespace
 \texttt{0x1000} & \texttt{CMD\_HISTORY\_GET} & Inicio de la descarga del histórico. \\
 \texttt{0x1001} & \texttt{CMD\_HISTORY\_CONFIRM} & Confirmación de la descarga. \\
 \texttt{0x1002} & \texttt{CMD\_HISTORY\_CANCEL} & Cancelación de la descarga. \\
 \texttt{0x1003} & \texttt{CMD\_PARAMS\_READ} & Lectura de la configuración actual. \\
-\midrule
+\addlinespace
 \texttt{0x3010}--\texttt{0x3015} & \texttt{CMD\_CTRL\_TEST\_*} & Pruebas de compresor, resistencia, ventilador, luz y rutina completa. \\
 \bottomrule
 \end{tabular}
@@ -394,7 +367,7 @@ La tabla \ref{tab:trama_fragmento} describe cada campo. El formato es el mismo e
 \label{tab:trama_fragmento}
 \begin{tabular}{L{0.14\textwidth} L{0.74\textwidth}}
 \toprule
-Campo & Contenido \\
+\textbf{Campo} & \textbf{Contenido} \\
 \midrule
 \texttt{SEQ} & Número de secuencia del fragmento. Comienza en 0 y aumenta de a uno. \\
 \texttt{N} & Cantidad total de fragmentos del mensaje. \\
@@ -417,7 +390,7 @@ Todas las transmisiones se encolan como eventos de NimBLE y se ejecutan en la ta
 \section{Capa de autenticación y encriptación}
 \label{sec:autenticacion}
 
-La interfaz local permite modificar la configuración del N150, accionar sus actuadores y extraer sus datos, por lo que el acceso no puede depender solo de la proximidad física. Para restringirlo, se implementó un esquema propio de autenticación y cifrado en la capa de aplicación, en lugar de utilizar los mecanismos de emparejamiento y vinculación (\textit{bonding}) que ofrece BLE a través de NimBLE. Esta sección describe los motivos de esa decisión y el funcionamiento general del esquema. Por tratarse de información sensible, se omiten los detalles de formato y de derivación de claves.
+La interfaz local permite modificar la configuración del N150, accionar sus actuadores y extraer sus datos, por lo que el acceso no puede depender solo de la proximidad física. Para restringirlo, se implementó un esquema propio de autenticación y cifrado en la capa de aplicación, en lugar de utilizar los mecanismos de emparejamiento y vinculación (bonding) que ofrece BLE a través de NimBLE. Esta sección describe los motivos de esa decisión y el funcionamiento general del esquema. Por tratarse de información sensible, se omiten los detalles de formato y de derivación de claves.
 
 \subsection{Motivos del diseño en la capa de aplicación}
 \label{subsec:auth_motivos}
@@ -425,22 +398,22 @@ La interfaz local permite modificar la configuración del N150, accionar sus act
 La decisión de no utilizar el emparejamiento de BLE respondió a cuatro motivos:
 
 \begin{itemize}
-\item \textbf{Experiencia del técnico.} El emparejamiento muestra diálogos del sistema operativo y requiere pasos adicionales. Con un esquema propio, la aplicación se conecta y se autentica sin intervención del técnico.
-\item \textbf{Muchos teléfonos por equipo.} Un mismo N150 es atendido por distintos técnicos con distintos teléfonos a lo largo de su vida útil. La vinculación de BLE almacena una cantidad limitada de vínculos, que habría que administrar en cada equipo.
-\item \textbf{Autorización de la aplicación.} El emparejamiento establece un enlace cifrado con cualquier teléfono que complete el procedimiento, pero no garantiza que quien se conecta sea la aplicación de Sensify. El esquema propio, basado en una clave secreta, restringe el acceso a la aplicación oficial.
-\item \textbf{Control del protocolo.} Al implementar la seguridad en la capa de aplicación, el comportamiento es el mismo en Android e iOS y no depende de la forma en que cada sistema operativo maneja el emparejamiento.
+\item Experiencia del técnico: el emparejamiento muestra diálogos del sistema operativo y requiere pasos adicionales. Con un esquema propio, la aplicación se conecta y se autentica sin intervención del técnico.
+\item Muchos teléfonos por equipo: un mismo N150 es atendido por distintos técnicos con distintos teléfonos a lo largo de su vida útil. La vinculación de BLE almacena una cantidad limitada de vínculos, que habría que administrar en cada equipo.
+\item Autorización de la aplicación: el emparejamiento establece un enlace cifrado con cualquier teléfono que complete el procedimiento, pero no garantiza que quien se conecta sea la aplicación de Sensify. El esquema propio, basado en una clave secreta, restringe el acceso a la aplicación oficial.
+\item Control del protocolo: al implementar la seguridad en la capa de aplicación, el comportamiento es el mismo en Android e iOS y no depende de la forma en que cada sistema operativo maneja el emparejamiento.
 \end{itemize}
 
-La implementación utiliza la biblioteca criptográfica mbedTLS, incluida en ESP-IDF, que aprovecha la aceleración por \textit{hardware} del ESP32 para las operaciones de cifrado y \textit{hash}, por lo que no fue necesario incorporar bibliotecas adicionales.
+La implementación utiliza la biblioteca criptográfica mbedTLS, incluida en ESP-IDF, que aprovecha la aceleración por hardware del ESP32.
 
 \subsection{Autenticación de la sesión}
 \label{subsec:auth_sesion}
 
-La autenticación se basa en una clave secreta que solo conocen el equipo y la aplicación oficial, y se realiza al comienzo de cada conexión mediante un intercambio de desafío y respuesta sobre la característica \texttt{AUTH-SYNC}. Al establecerse la conexión, el equipo genera un valor aleatorio de un solo uso (\textit{nonce}) que la aplicación obtiene leyendo esa característica. La aplicación genera su propio \textit{nonce} y responde con ambos valores y un código de autenticación de mensajes basado en \textit{hash} (HMAC, del inglés, \textit{Hash-based Message Authentication Code}), calculado con la clave secreta y la función SHA-256. El equipo verifica que la respuesta corresponda al desafío de la sesión en curso y que el código sea válido. Solo una aplicación que conoce la clave puede generar una respuesta correcta, y como el desafío cambia en cada conexión, una respuesta capturada no puede reutilizarse en otra.
+La autenticación se basa en una clave secreta que solo conocen el equipo y la aplicación oficial, y se realiza al comienzo de cada conexión mediante un intercambio de desafío y respuesta sobre la característica \texttt{AUTH-SYNC}. Al establecerse la conexión, el equipo genera un valor aleatorio de un solo uso (nonce) que la aplicación obtiene leyendo esa característica. La aplicación genera su propio nonce y responde con ambos valores y un código de autenticación de mensajes basado en hash (HMAC, del inglés, \textit{Hash-based Message Authentication Code}), calculado con la clave secreta y la función SHA-256. El equipo verifica que la respuesta corresponda al desafío de la sesión en curso y que el código sea válido. Solo una aplicación que conoce la clave puede generar una respuesta correcta, y como el desafío cambia en cada conexión, una respuesta capturada no puede reutilizarse en otra.
 
-Si la verificación es exitosa, ambos extremos derivan una clave de sesión a partir de la clave secreta y de los dos \textit{nonces}. De este modo, cada conexión utiliza una clave distinta y la clave secreta no se emplea directamente para cifrar los mensajes.
+Si la verificación es exitosa, ambos extremos derivan una clave de sesión a partir de la clave secreta y de los dos nonces. De este modo, cada conexión utiliza una clave distinta y la clave secreta no se emplea directamente para cifrar los mensajes.
 
-Antes de completar la autenticación, el equipo solo acepta el intercambio sobre \texttt{AUTH-SYNC}. Cualquier escritura en otra característica provoca la desconexión, y las suscripciones a notificaciones o indicaciones se ignoran sin cerrar la conexión. Este último criterio se adoptó porque algunos clientes BLE, como ciertas aplicaciones de prueba en iOS, se suscriben automáticamente al conectarse; la aplicación vuelve a suscribirse una vez autenticada.
+Antes de completar la autenticación, el equipo solo acepta el intercambio sobre \texttt{AUTH-SYNC}. Cualquier escritura en otra característica provoca la desconexión, y las suscripciones a notificaciones o indicaciones se ignoran sin cerrar la conexión. Este criterio se adoptó porque algunos clientes BLE se suscriben automáticamente al conectarse.
 
 \subsection{Protección de los mensajes}
 \label{subsec:auth_mensajes}
@@ -449,14 +422,14 @@ Una vez autenticada la sesión, todos los mensajes de la interfaz se transmiten 
 
 Cada trama incluye un tipo de mensaje y un contador. El tipo identifica la operación, y cada característica acepta únicamente el tipo que le corresponde, lo que impide redirigir un mensaje válido a otra operación. El contador es independiente para cada sentido y debe crecer en cada mensaje: el equipo rechaza toda trama cuyo contador no supere al último recibido, lo que impide reinyectar mensajes capturados durante la sesión.
 
-La protección se incorporó como una capa común sobre los formatos existentes. Los mensajes conservan su contenido binario o JSON, y la trama segura se fragmenta, cuando es necesario, con el mecanismo descrito en la sección \ref{subsec:gatt_transmision}. En consecuencia, el CRC32 de la fragmentación cumple solo una función de control de transporte, mientras que la integridad y la autenticidad quedan a cargo del cifrado autenticado. Contar con un único esquema para todas las características simplificó la implementación y las pruebas, a costa de un pequeño aumento en el tamaño de los mensajes breves.
+La protección se incorporó como una capa común sobre los formatos existentes. Los mensajes conservan su contenido binario o JSON, y la trama segura se fragmenta, cuando es necesario, con el mecanismo descrito en la sección \ref{subsec:gatt_transmision}. En consecuencia, el CRC32 de la fragmentación cumple solo una función de control de transporte, mientras que la integridad y la autenticidad quedan a cargo del cifrado autenticado.
 
 \subsection{Gestión de la sesión y de las fallas}
 \label{subsec:auth_fallas}
 
 La sesión segura dura lo mismo que la conexión. Al desconectarse el teléfono, \texttt{ble-Gap} descarta la clave de sesión, los contadores y cualquier mensaje parcialmente recibido, por lo que la conexión siguiente debe autenticarse nuevamente desde el inicio.
 
-Ante cualquier falla de seguridad, como un código de autenticación inválido, un tipo de mensaje incorrecto, una trama alterada o un contador repetido, el equipo cierra la conexión de inmediato. Todas las fallas utilizan el mismo motivo estándar de desconexión, y la causa específica se guarda solo en los registros internos del firmware.
+Ante cualquier falla de seguridad, como un código de autenticación inválido, un tipo de mensaje incorrecto, una trama alterada o un contador repetido, el equipo cierra la conexión de inmediato.
 
 %----------------------------------------------------------------------------------------
 
@@ -473,9 +446,9 @@ La sección \ref{sec:arquitectura_sistema} presentó los dos mecanismos mediante
 \setlength{\tabcolsep}{4pt}
 \begin{tabular}{L{0.19\textwidth} L{0.27\textwidth} L{0.16\textwidth} L{0.30\textwidth}}
 \toprule
-Función & Subsistema del N150 & Mecanismo & Características \\
+\textbf{Función} & \textbf{Subsistema del N150} & \textbf{Mecanismo} & \textbf{Características} \\
 \midrule
-Histórico y hora & Subsistema de \textit{data} y servicio de hora & Dependencia directa & \texttt{HISTORY-SEND}\newline\texttt{TIME-SYNC} \\
+Histórico y hora & Subsistema de data y servicio de hora & Dependencia directa & \texttt{HISTORY-SEND}\newline\texttt{TIME-SYNC} \\
 Parámetros & Gestor de parámetros & Callback & \texttt{PARAMETROS-GET}\newline\texttt{PARAMETROS-RESPONSE} \\
 Pruebas de actuadores & Rutinas de control & Callback & \texttt{COMMAND-GET} \\
 Metadatos y diagnóstico & Lógica de nube y estado de conectividad & Callback & \texttt{METADATA-READ}\newline\texttt{DIAGNOSIS-READ} \\
@@ -485,50 +458,56 @@ Registros & Sistema de registros y terminal & Dependencia directa & \texttt{LOG-
 \end{tabular}
 \end{table}
 
+\FloatBarrier
 \subsection{Histórico y sincronización horaria}
 \label{subsec:integracion_historico}
 
-Cuando el N150 no tiene cobertura celular, los registros de telemetría se acumulan en el almacenamiento a la espera de ser enviados a la plataforma. La descarga del histórico por BLE permite extraer esos registros pendientes con el teléfono, que pasa a ser el canal que los lleva a la plataforma.
+Cuando el N150 no tiene cobertura celular, los registros de telemetría se acumulan en el almacenamiento a la espera de ser enviados a la plataforma. La descarga del histórico por BLE permite extraer esos registros pendientes con el teléfono, que pasa a ser el canal que los lleva a la plataforma. La figura \ref{fig:flujo_historico} resume la secuencia completa, desde la sincronización horaria hasta la confirmación de la descarga.
 
-Cada registro incluye la marca de tiempo del momento en que se generó. Si el equipo no dispone de la hora correcta, por ejemplo porque nunca obtuvo conectividad, los registros almacenados carecen de una referencia temporal válida y no pueden aprovecharse. Por este motivo, se incorporó la sincronización horaria desde el teléfono. La aplicación escribe en \texttt{TIME-SYNC} la fecha y la hora actuales en formato JSON, y \texttt{sfy-BLE} las aplica mediante el servicio de hora existente del firmware, de modo que los registros posteriores se generan con una marca de tiempo correcta.
-
-Como los registros descargados dejan de estar pendientes para el equipo, la transferencia se diseñó como una transacción, de modo que ningún registro se pierda si la descarga se interrumpe. Al recibir la solicitud, el equipo consulta al subsistema de \textit{data} la cantidad de registros pendientes, la envía a la aplicación y luego transmite un registro por indicación, con el mismo formato binario que utiliza para la plataforma. Cada registro enviado se marca como pendiente de confirmación, pero no se elimina del almacenamiento. Al finalizar, la aplicación confirma la descarga y recién entonces los registros se eliminan. Si la aplicación cancela la descarga, o si transcurren dos minutos sin confirmación, los registros marcados vuelven a quedar pendientes y el equipo los enviará a la plataforma cuando recupere la conectividad. La figura \ref{fig:flujo_historico} muestra la sincronización horaria y la descarga completa del histórico.
-
-\begin{figure}[htbp]
+\begin{figure}[!h]
 \centering
 \includegraphics[width=0.62\textwidth]{Figures/historico.jpg}
-\caption[Sincronización horaria y descarga del histórico]{Sincronización horaria y descarga transaccional del histórico. La aplicación primero actualiza la hora del equipo y luego descarga los registros pendientes, que se eliminan solo si confirma la descarga y se restauran si la cancela o no responde en dos minutos.}
+\caption{Sincronización horaria y descarga transaccional del histórico.}
 \label{fig:flujo_historico}
 \end{figure}
 
+Cada registro incluye la marca de tiempo del momento en que se generó. Si el equipo no dispone de la hora correcta, por ejemplo porque nunca obtuvo conectividad, los registros almacenados carecen de una referencia temporal válida y no pueden aprovecharse. Por este motivo, se incorporó la sincronización horaria desde el teléfono. La aplicación escribe en \texttt{TIME-SYNC} la fecha y la hora actuales en formato JSON, expresadas en tiempo universal coordinado (UTC, del inglés, \textit{Coordinated Universal Time}) según la norma ISO 8601 y con precisión de milisegundos. \texttt{sfy-BLE} las aplica mediante el servicio de hora existente del firmware, de modo que los registros posteriores se generan con una marca de tiempo correcta. Al expresarse en UTC, la hora recibida no depende de la zona horaria configurada en el teléfono del técnico.
+
+Como los registros descargados dejan de estar pendientes para el equipo, la transferencia se diseñó como una transacción, de modo que ningún registro se pierda si la descarga se interrumpe. Al recibir la solicitud, el equipo consulta al subsistema de data la cantidad de registros pendientes, la envía a la aplicación y luego transmite un registro por indicación, con el mismo formato binario que utiliza para la plataforma. Conocer de antemano la cantidad permite que la aplicación sepa cuántos registros debe recibir. Cada registro se lee del almacenamiento recién cuando la aplicación confirmó la recepción del anterior, por lo que el equipo mantiene en memoria un solo registro por vez, aunque el histórico sea extenso. Cada registro enviado se marca como pendiente de confirmación, pero no se elimina del almacenamiento. Al finalizar, la aplicación confirma la descarga y recién entonces los registros se eliminan. Si la aplicación cancela la descarga, o si transcurren dos minutos sin confirmación desde el envío del último registro, los registros marcados vuelven a quedar pendientes y el equipo los enviará a la plataforma cuando recupere la conectividad.
+
+
+\FloatBarrier
 \subsection{Parámetros}
 \label{subsec:integracion_parametros}
 
-La configuración del N150 se administra mediante un gestor de parámetros preexistente, que ya atendía los cambios recibidos desde la plataforma. La interfaz BLE se integró con él mediante dos callbacks. El de lectura obtiene la configuración actual en el mismo formato JSON que el gestor genera para la plataforma, y la aplicación la solicita con el comando de lectura de parámetros. El de procesamiento recibe los cambios que la aplicación envía por \texttt{PARAMETROS-GET}, una vez reensamblados por \texttt{ble-rcvMsg}. El gestor valida y aplica cada cambio con las mismas reglas que utiliza para la plataforma, y su respuesta se devuelve a la aplicación por \texttt{PARAMETROS-RESPONSE}.
+La configuración del N150 se administra mediante un gestor de parámetros preexistente, que ya atendía los cambios recibidos desde la plataforma. La interfaz BLE se integró con él mediante dos callbacks. El de lectura obtiene la configuración actual en el mismo formato JSON que el gestor genera para la plataforma, y la aplicación la solicita con el comando de lectura de parámetros. El de procesamiento recibe los cambios que la aplicación envía por \texttt{PARAMETROS-GET}, una vez reensamblados por \texttt{ble-rcvMsg}. El gestor valida y aplica cada cambio con las mismas reglas que utiliza para la plataforma, y su respuesta se devuelve a la aplicación por \texttt{PARAMETROS-RESPONSE}. La figura \ref{fig:flujo_parametros} muestra el recorrido completo de una escritura de parámetros.
 
-Luego de procesar un cambio recibido por BLE, el gestor deja pendiente un reporte forzado de la configuración, que la lógica de nube envía a la plataforma. Así, la plataforma conserva una copia actualizada de los parámetros, aunque el cambio no haya llegado por los canales remotos. La figura \ref{fig:flujo_parametros} muestra el recorrido completo de una escritura de parámetros. El propio componente aprovecha este mecanismo: \texttt{APP\_LINK} se registra en el gestor como un parámetro más, por lo que el modo de operación de la interfaz puede modificarse por los mismos medios que el resto de la configuración.
-
-\begin{figure}[htbp]
+\begin{figure}[!h]
 \centering
 \includegraphics[width=\textwidth]{Figures/params.jpg}
-\caption[Escritura de parámetros]{Escritura de parámetros desde la aplicación móvil. Los fragmentos recibidos se reensamblan, el gestor de parámetros valida y aplica los cambios con sus reglas existentes, la respuesta vuelve a la aplicación y queda pendiente un reporte forzado a la plataforma.}
+\caption{Escritura de parámetros desde la aplicación móvil.}
 \label{fig:flujo_parametros}
 \end{figure}
 
+Luego de procesar un cambio recibido por BLE, el gestor deja pendiente un reporte forzado de la configuración, que la lógica de nube envía a la plataforma. Así, la plataforma conserva una copia actualizada de los parámetros, aunque el cambio no haya llegado por los canales remotos. El propio componente aprovecha este mecanismo: \texttt{APP\_LINK} se registra en el gestor como un parámetro más, por lo que el modo de operación de la interfaz puede modificarse por los mismos medios que el resto de la configuración.
+
+
+\FloatBarrier
 \subsection{Pruebas de actuadores}
 \label{subsec:integracion_pruebas}
 
 Las pruebas de actuadores permiten que el técnico verifique en el lugar el funcionamiento de la heladera. Los comandos recibidos por \texttt{COMMAND-GET} se entregan mediante un callback a las rutinas de control existentes del N150, que habilitan el modo de prueba y accionan de forma individual el compresor, la resistencia, el ventilador y la luz, o ejecutan la rutina de prueba completa. El argumento del comando indica si la prueba se inicia o se detiene. El resultado que devuelve la rutina se informa a la aplicación por \texttt{COMMANDS-RESPONSE}. De este modo, la interfaz local no accede directamente a los actuadores, sino que utiliza las rutinas de prueba que el controlador ya tenía implementadas.
 
-La figura \ref{fig:flujo_comando} muestra el recorrido genérico de un comando. Las lecturas de metadatos y diagnóstico, descritas a continuación, siguen el mismo recorrido, con la diferencia de que la solicitud llega por \texttt{COMMAND-DATA} y la respuesta se transmite fragmentada por indicaciones.
+La figura \ref{fig:flujo_comando} muestra el recorrido genérico de un comando: la solicitud se delega mediante un callback a la rutina existente del subsistema correspondiente, y el resultado vuelve a la aplicación por la característica de respuesta asociada. Las lecturas de metadatos y diagnóstico, descritas a continuación, siguen el mismo recorrido, con la diferencia de que la solicitud llega por \texttt{COMMAND-DATA} y la respuesta se transmite fragmentada por indicaciones.
 
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=0.7\textwidth]{Figures/comando.jpg}
-\caption[Recorrido genérico de un comando]{Recorrido genérico de un comando. La solicitud se delega mediante un callback a la rutina existente del subsistema correspondiente, y el resultado vuelve a la aplicación por la característica de respuesta asociada.}
+\caption{Recorrido genérico de un comando.}
 \label{fig:flujo_comando}
 \end{figure}
 
+\FloatBarrier
 \subsection{Metadatos y diagnóstico}
 \label{subsec:integracion_metadatos}
 

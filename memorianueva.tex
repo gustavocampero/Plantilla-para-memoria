@@ -25,18 +25,6 @@
 \usepackage{placeins}       % \FloatBarrier para fijar figuras antes de una sección
 \usepackage{array}          % Tipos de columna personalizados
 \newcolumntype{L}[1]{>{\raggedright\arraybackslash}p{#1}} % Columna alineada a la izquierda, sin justificar
-\lstset{                    % Estilo de los listados de código
-	language=C,
-	basicstyle=\ttfamily\footnotesize,
-	keywordstyle=\bfseries,
-	commentstyle=\itshape\color{gray},
-	frame=tb,
-	columns=fullflexible,
-	keepspaces=true,
-	showstringspaces=false,
-	xleftmargin=1em,
-	literate={á}{{\'a}}1 {é}{{\'e}}1 {í}{{\'i}}1 {ó}{{\'o}}1 {ú}{{\'u}}1 {ñ}{{\~n}}1
-}
 \makeatletter
 \setlength{\@fptop}{0pt}    % Páginas de flotantes alineadas arriba en lugar de centradas
 \makeatother

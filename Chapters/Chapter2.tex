@@ -35,10 +35,11 @@ El N150 es un producto preexistente de Sensify. Su hardware y sus subsistemas de
 
 \begin{figure}[htbp]
 	\centering
-	\includegraphics[width=0.6\textwidth]{Figures/N150_render.jpg}
-	\caption[Controlador N150]{Controlador N150. Imagen cedida por Sensify S.~A.~S.}
+	\includegraphics[width=0.66\textwidth]{Figures/N150_render.jpg}
+	\caption[Controlador N150]{Controlador N150.\protect\footnotemark}
 	\label{fig:n150}
 \end{figure}
+\footnotetext{Imagen cedida por Sensify S.~A.~S.}
 
 Desde el punto de vista arquitectónico, el controlador se basa en la interacción de distintos componentes especializados. Incorpora el PIC24FJ64GU205T \cite{microchip:pic24fj64gu205}, un microcontrolador encargado de ejecutar la lógica de control eléctrico y mecánico del sistema de refrigeración. También integra un microcontrolador ESP32 \cite{espressif:esp32}, responsable de la conectividad y del procesamiento asociado a las comunicaciones. El ESP32 cuenta con 2~MB de memoria externa de tipo pseudoestática (PSRAM, del inglés, \textit{Pseudo-Static Random Access Memory}), que amplía la memoria interna del microcontrolador. Para el acceso a redes celulares mediante comandos AT, cuenta con un módulo Quectel BG95 \cite{quectel:bg95}. Además, dispone de una memoria externa para almacenar información y respaldar datos cuando las condiciones de conectividad no permiten su transmisión inmediata.
 
@@ -47,9 +48,10 @@ La figura \ref{fig:placa_oem} muestra la placa interna del N150 sobre la que se 
 \begin{figure}[htbp]
 	\centering
 	\includegraphics[width=0.75\textwidth]{Figures/oem.jpg}
-	\caption[Placa interna del N150]{Placa interna del N150 con el módulo ESP32 y el módem Quectel BG95. Imagen cedida por Sensify S.~A.~S.}
+	\caption[Placa interna del N150]{Placa interna del N150 con el módulo ESP32 y el módem Quectel BG95.\protect\footnotemark}
 	\label{fig:placa_oem}
 \end{figure}
+\footnotetext{Imagen cedida por Sensify S.~A.~S.}
 
 Esta estructura proporciona capacidades de telemetría, parametrización remota, actualización de firmware y geolocalización de las heladeras instaladas. Con estas funciones, el N150 opera no solo como controlador del equipo de frío, sino también como nodo inteligente dentro de una red de activos conectados.
 
