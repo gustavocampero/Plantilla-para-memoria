@@ -19,12 +19,39 @@
 \contentsline {section}{\numberline {3.2}Diseño detallado por módulos}{13}{section.3.2}%
 \contentsline {subsection}{\numberline {3.2.1}\texttt {ble-Main}}{14}{subsection.3.2.1}%
 \contentsline {subsection}{\numberline {3.2.2}\texttt {ble-Gap} y \texttt {ble-Gatt}}{15}{subsection.3.2.2}%
-\contentsline {subsection}{\numberline {3.2.3}\texttt {ble-rcvMsg} y \texttt {ble-Security}}{16}{subsection.3.2.3}%
-\contentsline {subsection}{\numberline {3.2.4}\texttt {ble-Data} y \texttt {ble-Params}}{16}{subsection.3.2.4}%
-\contentsline {subsection}{\numberline {3.2.5}\texttt {ble-Commands} y \texttt {ble-Logs}}{17}{subsection.3.2.5}%
-\contentsline {chapter}{\numberline {4}Ensayos y resultados}{19}{chapter.4}%
-\contentsline {section}{\numberline {4.1}Pruebas funcionales del hardware}{19}{section.4.1}%
-\contentsline {chapter}{\numberline {5}Conclusiones}{21}{chapter.5}%
-\contentsline {section}{\numberline {5.1}Conclusiones generales }{21}{section.5.1}%
-\contentsline {section}{\numberline {5.2}Próximos pasos}{21}{section.5.2}%
-\contentsline {chapter}{Bibliografía}{23}{appendix*.19}%
+\contentsline {subsection}{\numberline {3.2.3}\texttt {ble-rcvMsg} y \texttt {ble-Security}}{15}{subsection.3.2.3}%
+\contentsline {subsection}{\numberline {3.2.4}\texttt {ble-Data} y \texttt {ble-Params}}{15}{subsection.3.2.4}%
+\contentsline {subsection}{\numberline {3.2.5}\texttt {ble-Commands} y \texttt {ble-Logs}}{16}{subsection.3.2.5}%
+\contentsline {section}{\numberline {3.3}Configuración BLE implementada}{16}{section.3.3}%
+\contentsline {subsection}{\numberline {3.3.1}Selección de la pila y del controlador}{16}{subsection.3.3.1}%
+\contentsline {subsection}{\numberline {3.3.2}Opciones del host NimBLE}{16}{subsection.3.3.2}%
+\contentsline {subsection}{\numberline {3.3.3}Uso de memoria externa}{17}{subsection.3.3.3}%
+\contentsline {section}{\numberline {3.4}Diseño de la capa GAP}{18}{section.3.4}%
+\contentsline {subsection}{\numberline {3.4.1}Identificación del equipo}{18}{subsection.3.4.1}%
+\contentsline {subsection}{\numberline {3.4.2}Contenido del \textit {advertising}}{18}{subsection.3.4.2}%
+\contentsline {subsection}{\numberline {3.4.3}Modos de operación}{19}{subsection.3.4.3}%
+\contentsline {subsection}{\numberline {3.4.4}\textit {Advertising} con datos}{20}{subsection.3.4.4}%
+\contentsline {subsection}{\numberline {3.4.5}Gestión de la conexión}{21}{subsection.3.4.5}%
+\contentsline {section}{\numberline {3.5}Diseño de la capa GATT}{22}{section.3.5}%
+\contentsline {subsection}{\numberline {3.5.1}Organización de servicios y características}{22}{subsection.3.5.1}%
+\contentsline {subsection}{\numberline {3.5.2}Diseño orientado a la extensión}{23}{subsection.3.5.2}%
+\contentsline {subsection}{\numberline {3.5.3}Comandos, estados y formatos}{24}{subsection.3.5.3}%
+\contentsline {subsection}{\numberline {3.5.4}Transmisión de respuestas}{25}{subsection.3.5.4}%
+\contentsline {section}{\numberline {3.6}Capa de autenticación y encriptación}{26}{section.3.6}%
+\contentsline {subsection}{\numberline {3.6.1}Motivos del diseño en la capa de aplicación}{26}{subsection.3.6.1}%
+\contentsline {subsection}{\numberline {3.6.2}Autenticación de la sesión}{26}{subsection.3.6.2}%
+\contentsline {subsection}{\numberline {3.6.3}Protección de los mensajes}{27}{subsection.3.6.3}%
+\contentsline {subsection}{\numberline {3.6.4}Gestión de la sesión y de las fallas}{27}{subsection.3.6.4}%
+\contentsline {section}{\numberline {3.7}Integración del sistema}{28}{section.3.7}%
+\contentsline {subsection}{\numberline {3.7.1}Histórico y sincronización horaria}{28}{subsection.3.7.1}%
+\contentsline {subsection}{\numberline {3.7.2}Parámetros}{29}{subsection.3.7.2}%
+\contentsline {subsection}{\numberline {3.7.3}Pruebas de actuadores}{30}{subsection.3.7.3}%
+\contentsline {subsection}{\numberline {3.7.4}Metadatos y diagnóstico}{31}{subsection.3.7.4}%
+\contentsline {subsection}{\numberline {3.7.5}Comandos para la lógica de nube y conectividad remota}{31}{subsection.3.7.5}%
+\contentsline {subsection}{\numberline {3.7.6}Registros}{32}{subsection.3.7.6}%
+\contentsline {chapter}{\numberline {4}Ensayos y resultados}{33}{chapter.4}%
+\contentsline {section}{\numberline {4.1}Pruebas funcionales del hardware}{33}{section.4.1}%
+\contentsline {chapter}{\numberline {5}Conclusiones}{35}{chapter.5}%
+\contentsline {section}{\numberline {5.1}Conclusiones generales }{35}{section.5.1}%
+\contentsline {section}{\numberline {5.2}Próximos pasos}{35}{section.5.2}%
+\contentsline {chapter}{Bibliografía}{37}{appendix*.30}%

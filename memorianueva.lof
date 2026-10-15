@@ -8,5 +8,10 @@
 \contentsline {figure}{\numberline {2.4}{\ignorespaces Arquitectura de conectividad del N150}}{8}{figure.caption.12}%
 \addvspace {10\p@ }
 \contentsline {figure}{\numberline {3.1}{\ignorespaces Arquitectura general del firmware N150 e integración del módulo \texttt {sfy-BLE}.}}{12}{figure.caption.14}%
+\contentsline {figure}{\numberline {3.2}{\ignorespaces \textit {Display} virtual de una heladera en la aplicación móvil.}}{20}{figure.caption.19}%
+\contentsline {figure}{\numberline {3.3}{\ignorespaces Flujo del \textit {advertising} con datos.}}{21}{figure.caption.20}%
+\contentsline {figure}{\numberline {3.4}{\ignorespaces Sincronización horaria y descarga del histórico}}{29}{figure.caption.26}%
+\contentsline {figure}{\numberline {3.5}{\ignorespaces Escritura de parámetros}}{30}{figure.caption.27}%
+\contentsline {figure}{\numberline {3.6}{\ignorespaces Recorrido genérico de un comando}}{31}{figure.caption.28}%
 \addvspace {10\p@ }
 \addvspace {10\p@ }

@@ -5,7 +5,12 @@
 \contentsline {table}{\numberline {2.1}{\ignorespaces Relación entre los requerimientos de la interfaz local y las características de BLE.}}{9}{table.caption.13}%
 \addvspace {10\p@ }
 \contentsline {table}{\numberline {3.1}{\ignorespaces Responsabilidades de los módulos del componente BLE.}}{14}{table.caption.15}%
-\contentsline {table}{\numberline {3.2}{\ignorespaces Ajustes de configuración de NimBLE.}}{15}{table.caption.16}%
-\contentsline {table}{\numberline {3.3}{\ignorespaces Modos de operación definidos por \texttt {APP\_LINK}.}}{16}{table.caption.17}%
+\contentsline {table}{\numberline {3.2}{\ignorespaces Opciones del host NimBLE revisadas.}}{17}{table.caption.16}%
+\contentsline {table}{\numberline {3.3}{\ignorespaces Distribución del contenido del \textit {advertising}.}}{19}{table.caption.17}%
+\contentsline {table}{\numberline {3.4}{\ignorespaces Modos de operación definidos por \texttt {APP\_LINK}.}}{19}{table.caption.18}%
+\contentsline {table}{\numberline {3.5}{\ignorespaces Servicios y características GATT implementados.}}{22}{table.caption.21}%
+\contentsline {table}{\numberline {3.6}{\ignorespaces Comandos binarios de la interfaz GATT.}}{24}{table.caption.23}%
+\contentsline {table}{\numberline {3.7}{\ignorespaces Campos de la trama de fragmentación.}}{25}{table.caption.24}%
+\contentsline {table}{\numberline {3.8}{\ignorespaces Integración de las funciones de la interfaz local con los subsistemas del N150.}}{28}{table.caption.25}%
 \addvspace {10\p@ }
 \addvspace {10\p@ }

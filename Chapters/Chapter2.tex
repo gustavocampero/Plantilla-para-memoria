@@ -40,7 +40,7 @@ El N150 es un producto preexistente de Sensify. Su hardware y sus subsistemas de
 	\label{fig:n150}
 \end{figure}
 
-Desde el punto de vista arquitectónico, el controlador se basa en la interacción de distintos componentes especializados. Incorpora el PIC24FJ64GU205T \cite{microchip:pic24fj64gu205}, un microcontrolador encargado de ejecutar la lógica de control eléctrico y mecánico del sistema de refrigeración. También integra un microcontrolador ESP32 \cite{espressif:esp32}, responsable de la conectividad y del procesamiento asociado a las comunicaciones. Para el acceso a redes celulares mediante comandos AT, cuenta con un módulo Quectel BG95 \cite{quectel:bg95}. Además, dispone de una memoria externa para almacenar información y respaldar datos cuando las condiciones de conectividad no permiten su transmisión inmediata.
+Desde el punto de vista arquitectónico, el controlador se basa en la interacción de distintos componentes especializados. Incorpora el PIC24FJ64GU205T \cite{microchip:pic24fj64gu205}, un microcontrolador encargado de ejecutar la lógica de control eléctrico y mecánico del sistema de refrigeración. También integra un microcontrolador ESP32 \cite{espressif:esp32}, responsable de la conectividad y del procesamiento asociado a las comunicaciones. El ESP32 cuenta con 2~MB de memoria externa de tipo pseudoestática (PSRAM, del inglés, \textit{Pseudo-Static Random Access Memory}), que amplía la memoria interna del microcontrolador. Para el acceso a redes celulares mediante comandos AT, cuenta con un módulo Quectel BG95 \cite{quectel:bg95}. Además, dispone de una memoria externa para almacenar información y respaldar datos cuando las condiciones de conectividad no permiten su transmisión inmediata.
 
 La figura \ref{fig:placa_oem} muestra la placa interna del N150 sobre la que se realizó el desarrollo. En ella se identifican el módulo ESP32 y el módem Quectel BG95.
 
@@ -103,7 +103,6 @@ La tabla \ref{tab:requerimientos_ble} relaciona las necesidades principales de l
 		Ausencia de hardware adicional & Interfaz de radio integrada en el ESP32 del controlador. \\
 		Configuración y diagnóstico & Organización de datos y operaciones mediante servicios y características GATT. \\
 		Actualización de firmware & Transferencia bidireccional de bloques de datos durante una conexión establecida. \\
-		Control de acceso & Emparejamiento, autenticación y cifrado del enlace. \\
 		\bottomrule
 	\end{tabular}
 	\label{tab:requerimientos_ble}
@@ -121,5 +120,3 @@ Una vez establecida la conexión, los datos se intercambian mediante GATT. El N1
 Los roles de conexión y los roles GATT describen aspectos diferentes y complementarios. La condición de periférico establece la participación del N150 en el descubrimiento y en la conexión BLE, mientras que la condición de servidor determina que conserva y expone los atributos. De manera análoga, el teléfono actúa como central porque inicia la conexión y como cliente porque solicita operaciones sobre los atributos publicados por el controlador.
 
 La interfaz implementada utiliza las cuatro operaciones de acceso requeridas por el sistema: lectura, escritura, notificación e indicación. Las lecturas permiten que el teléfono solicite valores al controlador y las escrituras permiten enviarle datos o comandos. Las notificaciones y las indicaciones posibilitan que el N150 informe cambios o resultados sin esperar una consulta periódica; las indicaciones, a diferencia de las notificaciones, requieren confirmación de recepción. Estas operaciones sustentan las funciones de parametrización, diagnóstico y actualización de firmware desarrolladas para la aplicación móvil.
-
-Debido a que la interfaz permite modificar la configuración y el firmware del controlador, el acceso no puede depender únicamente de la proximidad física. Por este motivo, la comunicación incorpora mecanismos de emparejamiento, autenticación y cifrado del enlace. De esta manera, BLE proporciona tanto el canal local requerido para las tareas de soporte como los mecanismos necesarios para restringir el acceso a las funciones del N150.
