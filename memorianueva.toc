@@ -50,8 +50,28 @@
 \contentsline {subsection}{\numberline {3.7.5}Comandos para la lógica de nube y conectividad remota}{31}{subsection.3.7.5}%
 \contentsline {subsection}{\numberline {3.7.6}Registros}{31}{subsection.3.7.6}%
 \contentsline {chapter}{\numberline {4}Ensayos y resultados}{33}{chapter.4}%
-\contentsline {section}{\numberline {4.1}Pruebas funcionales del hardware}{33}{section.4.1}%
-\contentsline {chapter}{\numberline {5}Conclusiones}{35}{chapter.5}%
-\contentsline {section}{\numberline {5.1}Conclusiones generales }{35}{section.5.1}%
-\contentsline {section}{\numberline {5.2}Próximos pasos}{35}{section.5.2}%
-\contentsline {chapter}{Bibliografía}{37}{appendix*.29}%
+\contentsline {section}{\numberline {4.1}Plan de ensayos}{33}{section.4.1}%
+\contentsline {subsection}{\numberline {4.1.1}Requisitos y criterios de aprobación}{33}{subsection.4.1.1}%
+\contentsline {subsection}{\numberline {4.1.2}Banco de ensayo}{35}{subsection.4.1.2}%
+\contentsline {subsection}{\numberline {4.1.3}Escenarios celulares}{35}{subsection.4.1.3}%
+\contentsline {subsection}{\numberline {4.1.4}Ejecución de los ensayos}{36}{subsection.4.1.4}%
+\contentsline {subsection}{\numberline {4.1.5}Modificaciones de criterio posteriores a la medición}{36}{subsection.4.1.5}%
+\contentsline {section}{\numberline {4.2}Ensayos unitarios}{37}{section.4.2}%
+\contentsline {section}{\numberline {4.3}Ensayos de comunicación}{38}{section.4.3}%
+\contentsline {subsection}{\numberline {4.3.1}Conexión, descubrimiento y autenticación}{38}{subsection.4.3.1}%
+\contentsline {subsection}{\numberline {4.3.2}Funciones del módulo}{39}{subsection.4.3.2}%
+\contentsline {subsection}{\numberline {4.3.3}Canales de registros}{40}{subsection.4.3.3}%
+\contentsline {subsection}{\numberline {4.3.4}Rango}{41}{subsection.4.3.4}%
+\contentsline {section}{\numberline {4.4}Ensayos de seguridad}{41}{section.4.4}%
+\contentsline {section}{\numberline {4.5}Ensayos de integración}{42}{section.4.5}%
+\contentsline {subsection}{\numberline {4.5.1}Memoria}{42}{subsection.4.5.1}%
+\contentsline {subsection}{\numberline {4.5.2}No interferencia con el controlador}{43}{subsection.4.5.2}%
+\contentsline {section}{\numberline {4.6}Matriz de escenarios celulares}{44}{section.4.6}%
+\contentsline {subsection}{\numberline {4.6.1}Escenario E1}{44}{subsection.4.6.1}%
+\contentsline {subsection}{\numberline {4.6.2}Escenario E2}{44}{subsection.4.6.2}%
+\contentsline {subsection}{\numberline {4.6.3}Escenario E3}{45}{subsection.4.6.3}%
+\contentsline {section}{\numberline {4.7}Análisis de resultados}{46}{section.4.7}%
+\contentsline {chapter}{\numberline {5}Conclusiones}{49}{chapter.5}%
+\contentsline {section}{\numberline {5.1}Conclusiones generales }{49}{section.5.1}%
+\contentsline {section}{\numberline {5.2}Próximos pasos}{49}{section.5.2}%
+\contentsline {chapter}{Bibliografía}{51}{appendix*.41}%

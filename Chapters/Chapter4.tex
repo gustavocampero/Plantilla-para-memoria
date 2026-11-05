@@ -1,15 +1,463 @@
-% Chapter Template
+\chapter{Ensayos y resultados}
+\label{Chapter4}
 
-\chapter{Ensayos y resultados} % Main chapter title
-
-\label{Chapter4} % Change X to a consecutive number; for referencing this chapter elsewhere, use \ref{ChapterX}
-Todos los capítulos deben comenzar con un breve párrafo introductorio que indique cuál es el contenido que se encontrará al leerlo.  La redacción sobre el contenido de la memoria debe hacerse en presente y todo lo referido al proyecto en pasado, siempre de modo impersonal.
+En este capítulo se presentan los ensayos a los que se sometió el componente \texttt{sfy-BLE} y sus resultados. En primer lugar se describe el plan de ensayos: los requisitos verificados, los criterios de aprobación, el banco, los escenarios celulares, la forma en que se ejecutaron los ensayos y las modificaciones de criterio posteriores a la medición. Luego se presentan los ensayos unitarios, de comunicación, de seguridad y de integración, y la matriz de escenarios celulares. El capítulo cierra con el análisis de los resultados y la trazabilidad entre requisitos y ensayos.
 
 %----------------------------------------------------------------------------------------
-%	SECTION 1
+
+\section{Plan de ensayos}
+\label{sec:plan_ensayos}
+
+Los ensayos se organizaron en cinco grupos, identificados por un prefijo: unitarios en PC (UT), de comunicación (CM), de seguridad (SE), de integración (IN) y la matriz de escenarios celulares (ES). Cada ensayo se registró en una ficha con su objetivo, sus precondiciones, sus pasos, el criterio de aprobación fijado antes de ejecutarlo, el resultado obtenido, la evidencia y el veredicto. La evidencia cruda, es decir, los registros serie del equipo, las salidas de los scripts y las capturas, se conserva junto a las fichas en el repositorio del componente.
+
+\subsection{Requisitos y criterios de aprobación}
+\label{subsec:ensayos_requisitos}
+
+La tabla \ref{tab:requisitos_ensayo} reproduce los requisitos de la planificación del trabajo que los ensayos debían verificar. La seguridad no responde a ninguno de ellos: se ensayó como verificación del diseño descrito en la sección \ref{sec:autenticacion}.
+
+\begin{table}[htbp]
+\centering
+\caption{Requisitos verificados por los ensayos.}
+\label{tab:requisitos_ensayo}
+\small
+\begin{tabular}{L{0.08\textwidth} L{0.82\textwidth}}
+\toprule
+\textbf{ID} & \textbf{Requisito} \\
+\midrule
+R1 & El sistema debe permitir establecer una conexión BLE entre el dispositivo móvil y el ESP32 del controlador Sensify N150. \\
+R2 & El módulo BLE debe exponer comandos para: (a) iniciar el diagnóstico del sistema de refrigeración (lectura de sensores y prueba de salidas), (b) consultar el estado de conectividad celular del módulo BG95 y (c) aplicar parámetros de configuración. \\
+R3 & El sistema debe funcionar correctamente sin requerir conectividad celular activa. \\
+R4 & El usuario debe poder realizar todas las funciones mencionadas dentro de un rango BLE típico. \\
+R5 & El módulo BLE debe ejecutarse en el ESP32 sin interferir con las funcionalidades principales del controlador ni generar fallos por agotamiento de \textit{heap}. \\
+R6 & El sistema debe ser probado en al menos tres escenarios celulares distintos: buena conectividad, conectividad intermitente y sin conectividad. \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Los criterios de aprobación se fijaron antes de ejecutar cada ensayo y se resumen en la tabla \ref{tab:criterios_ensayo}. Los cambios que se hicieron después de medir se reúnen en la sección \ref{subsec:modificaciones_criterio}.
+
+\begin{table}[htbp]
+\centering
+\caption{Criterios de aprobación fijados antes de medir.}
+\label{tab:criterios_ensayo}
+\small
+\begin{tabular}{L{0.22\textwidth} L{0.68\textwidth}}
+\toprule
+\textbf{Grupo} & \textbf{Criterio} \\
+\midrule
+Unitarios (UT) & Todos los casos pasan con los \textit{sanitizers} de direcciones y de comportamiento indefinido activos. \\
+Comunicación (CM) & El resultado coincide con el esperado de la ficha, sin desconexiones ni reinicios no previstos. \\
+Rango (R4) & Diez repeticiones por distancia. Aprobación: 10 de 10 a 5~m con un obstáculo y al menos 9 de 10 a 10~m con línea de vista. Una repetición es exitosa si conecta, autentica y completa la lectura de metadatos, parámetros y conectividad y la activación y desactivación del modo de prueba. \\
+\textit{Heap} (R5) & Prueba de al menos 2~h con el firmware completo: el mínimo histórico de RAM interna libre no baja de 10\,240~B y no hay reinicios. \\
+No interferencia (R5) & Cuatro funciones del controlador comparadas contra una línea base sin BLE: lectura del controlador y telemetría con intervalo medio dentro de $\pm$10~\% y ningún hueco mayor a dos períodos; ningún reinicio ni falla de tareas; parámetros idénticos y reloj sin saltos. \\
+Seguridad (SE) & Toda trama inválida o sin autenticar termina en desconexión, sin ejecutar el comando. \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+El umbral de 10\,240~B de R5 se fijó después de medir la línea base sin BLE (IN-01, sección \ref{sec:ensayos_integracion}) y antes de ejecutar el primer ensayo con BLE. Sin BLE, el mínimo histórico de RAM interna libre fue de 24\,867~B. El umbral permite que BLE consuma hasta unos 14,6~KB, el 59~\% de ese margen, y deja un piso para el resto de las tareas. Es una decisión de diseño del ensayo, no una medición. Se decidió sobre la RAM interna, y no sobre el \textit{heap} total, porque los 2~MB de PSRAM del equipo ocultan el consumo real: en la placa, el total indicaba unos 2~MB libres cuando la RAM interna ya rondaba los 54~KB.
+
+\subsection{Banco de ensayo}
+\label{subsec:banco_ensayo}
+
+Los ensayos en placa se ejecutaron sobre una placa NVC3 del banco remoto espbench, conectada mediante un bus serie universal (USB, del inglés, \textit{Universal Serial Bus}) a una Raspberry Pi del banco, a la que se accede por red. Mediante el banco se reserva la placa, con vencimiento y un responsable asignado, se graba el firmware con verificación y se lee el registro serie del equipo. La placa no estuvo en manos del autor durante las corridas.
+
+Se utilizaron dos variantes de firmware. Los ensayos de comunicación y de seguridad se ejecutaron con el firmware de producción NVC3-56\_1, compilado con ESP-IDF 5.3.2. Los ensayos de integración y la matriz de escenarios requirieron un firmware de ensayo que no es el de producción: incorpora un monitor de memoria (HEAPMON), que cada 10~s escribe en el registro serie la RAM interna libre, su mínimo histórico, el mayor bloque libre y un contador de tiempo desde el arranque, y, según el escenario, una tarea que fuerza el estado de la radio celular (E2\_FORCE o E3\_FORCE). Al terminar cada tramo se restauró el firmware de producción y se liberó la placa.
+
+Los scripts que actúan como cliente BLE, escritos en Python con la biblioteca bleak, se ejecutaron desde una computadora personal (PC) con Windows en los escenarios E1 y E2, y desde la Raspberry Pi 4 del propio banco, con Linux y la pila BlueZ, en el escenario E3, a unos $-$41~dBm. Se trata de otro adaptador y de otra pila BLE, diferencia que condiciona la comparación entre escenarios (sección \ref{sec:ensayos_escenarios}). Los ensayos manuales se hicieron con un teléfono con la aplicación nRF Connect. Los ensayos unitarios se compilaron y ejecutaron en la PC, con la versión 3.6.2 de mbedTLS incluida en ESP-IDF 5.3.2.
+
+La NVC3 del banco no está instalada en una heladera. En la ventana de IN-03 sus sondas de temperatura estaban en circuito abierto, y en CM-04 tenía una sonda interior conectada y las salidas libres o con indicadores, sin cargas reales. En consecuencia, los ensayos verifican que las tareas del controlador siguen su ciclo y que los comandos cambian su estado, pero no el comportamiento de un equipo de frío real.
+
+\subsection{Escenarios celulares}
+\label{subsec:escenarios_celulares}
+
+Los escenarios de R6 se definieron como se indica en la tabla \ref{tab:escenarios}. Los escenarios E2 y E3 se fuerzan por software, para que sean repetibles, con una tarea del firmware de ensayo que apaga la radio del módem (modo avión, \texttt{CFUN=4}) y la vuelve a encender (\texttt{CFUN=1}).
+
+\begin{table}[htbp]
+\centering
+\caption{Escenarios celulares.}
+\label{tab:escenarios}
+\small
+\begin{tabular}{L{0.07\textwidth} L{0.25\textwidth} L{0.58\textwidth}}
+\toprule
+\textbf{ID} & \textbf{Escenario} & \textbf{Cómo se obtiene} \\
+\midrule
+E1 & Buena conectividad & Módem registrado y con datos. En el banco, operador Claro AR, eMTC en la banda 28, en \textit{roaming}. \\
+E2 & Conectividad intermitente & Tarea E2\_FORCE: 240~s con red y 60~s sin red, después de una espera inicial de 180~s. \\
+E3 & Sin conectividad & Tarea E3\_FORCE: radio apagada de forma sostenida, después de una espera inicial de 30~s. \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+La duración de la ventana con red de E2 se fijó a partir de cinco arranques en frío medidos en E1. El tiempo hasta el registro en la red osciló entre 53,8~s y 79,7~s. El tiempo hasta conectar con el servidor del protocolo de transporte de telemetría de colas de mensajes (MQTT, del inglés, \textit{Message Queuing Telemetry Transport}) fue de unos 91~s en tres arranques y de 189,8~s en otro, y en el restante no se conectó durante los 264~s observados. Con la ventana de 120~s prevista originalmente, E2 habría fallado en dos de los cinco arranques. Se tomó el peor tiempo hasta MQTT, se le sumaron 30~s de margen y se redondeó a 240~s.
+
+\subsection{Ejecución de los ensayos}
+\label{subsec:ejecucion_ensayos}
+
+Todos los ensayos, tanto los unitarios como los de comunicación, seguridad, integración y escenarios, los ejecutó un agente de inteligencia artificial (IA), Claude Code, de Anthropic, bajo la dirección del autor. El agente lanzó los scripts, reservó y grabó la placa a través de espbench, recogió los registros y escribió las fichas con los resultados. También escribió las herramientas de ensayo (\texttt{es\_matrix.py}, \texttt{soak\_ble.py}, \texttt{security\_tests.py} y \texttt{heapmon.py}) y la instrumentación del firmware de ensayo. El agente no fijó los criterios de aprobación ni los veredictos finales: los criterios los fijó el autor antes de medir, y las modificaciones posteriores constan en cada ficha y en la sección \ref{subsec:modificaciones_criterio}. El autor revisó cada ficha después de que el agente la escribiera, para confirmar su validez.
+
+\subsection{Modificaciones de criterio posteriores a la medición}
+\label{subsec:modificaciones_criterio}
+
+En cinco casos el criterio o el veredicto se modificó después de conocer el resultado, por decisión del autor. Cada ficha informa ambos veredictos, el que corresponde al criterio original y el que corresponde al criterio modificado, y este capítulo los mantiene. La tabla \ref{tab:modificaciones_criterio} reúne los cinco casos; los apartados de cada ensayo remiten a esta sección en lugar de repetir la explicación.
+
+\begin{table}[htbp]
+\centering
+\caption{Modificaciones de criterio posteriores a la medición.}
+\label{tab:modificaciones_criterio}
+\footnotesize
+\setlength{\tabcolsep}{3pt}
+\begin{tabular}{L{0.09\textwidth} L{0.21\textwidth} L{0.21\textwidth} L{0.22\textwidth} L{0.19\textwidth}}
+\toprule
+\textbf{Ensayo} & \textbf{Criterio original} & \textbf{Criterio modificado} & \textbf{Resultado} & \textbf{Veredictos} \\
+\midrule
+CM-14 (R4, 10~m) & Al menos 9 de 10 a 10~m con línea de vista. & Al menos 8 de 10 a 10~m con paredes en medio. & 8 de 10 en dos corridas, 16 de 20 en total. & Original: no aprobado. Modificado: aprobado. \\
+\addlinespace
+CM-12 (canales de registros) & Todos los mensajes de \texttt{LOG-TERMINAL} descifran y \texttt{LOG-SEND} entrega registros. & \texttt{LOG-TERMINAL}: aprobado con defecto conocido. \texttt{LOG-SEND}: aprobado por una prueba posterior del autor. & \texttt{LOG-TERMINAL}: 2 de 12 tramas no descifran. \texttt{LOG-SEND}: ninguna notificación en unos 8~min. & Original: no aprobado. Modificado: aprobado por canal. \\
+\addlinespace
+IN-03 (telemetría) & Intervalo medio dentro de $\pm$10~\% y ningún hueco mayor a dos períodos. & Se evalúa la entrega de los eventos; la demora se informa. & 24 de 24 eventos entregados; 16 con más de 30~s de demora. & Original: no aprobado. Modificado: aprobado con observación. \\
+\addlinespace
+IN-02 en E2 & Sin reinicios. & El reinicio no se cuenta contra el escenario. & 1 reinicio; 310 de 313 ciclos. & Original: no aprobado. Modificado: aprobado. \\
+\addlinespace
+E3 (matriz e IN-02) & Matriz completa en las 6 pasadas; a lo sumo 1 ciclo fallido en IN-02. & Sin cambio de criterio: el veredicto pasa a inconcluso. & Matriz: 4 de 6 pasadas. IN-02: 45 ciclos fallidos. & Original: no aprobado. Modificado: inconcluso. \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Los motivos de cada modificación fueron los siguientes:
+
+\begin{itemize}
+\item CM-14: después de la primera corrida a 10~m, medida con paredes en medio, se informó que la línea de vista a esa distancia no se podía conseguir en el lugar de ensayo, y la condición pasó a ser con paredes. Con dos corridas ya medidas, el umbral bajó de 9 a 8 de 10 a pedido del autor. Los argumentos del autor, que no se midieron, son que 10~m con paredes es una condición más exigente que el rango típico que pide R4 y que en el borde de cobertura no existe un umbral normativo. La condición de 10~m con línea de vista no se midió.
+\item CM-12: la truncación de \texttt{LOG-TERMINAL} se aceptó como defecto conocido. Para \texttt{LOG-SEND}, el autor informó que durante la medición no se generaron registros en esa cola y que una prueba posterior entregó 10 de 10. Esa prueba no está en la evidencia archivada, no tiene fecha, hora ni método registrados y no la ejecutó el agente.
+\item IN-03: la telemetría pasó a evaluarse por la entrega de los eventos, y la demora quedó como dato informado. El argumento de que la carga del ensayo supera el uso típico no se midió.
+\item IN-02 en E2: se decidió no atribuir al escenario el único reinicio de la corrida. No hay una corrida de control que lo respalde.
+\item E3: el veredicto quedó inconcluso, a la espera de repetir la prueba con la PC con Windows, porque cambiaron a la vez el cliente y el escenario y porque la radio no estuvo apagada todo el tiempo. Esa repetición no se hizo.
+\end{itemize}
+
 %----------------------------------------------------------------------------------------
 
-\section{Pruebas funcionales del hardware}
-\label{sec:pruebasHW}
+\section{Ensayos unitarios}
+\label{sec:ensayos_unitarios}
 
-La idea de esta sección es explicar cómo se hicieron los ensayos, qué resultados se obtuvieron y analizarlos.
+Los ensayos unitarios cubren la lógica del componente que no depende de NimBLE: el reensamblado de mensajes fragmentados y su CRC32, la trama segura, el intercambio de autenticación y el despacho de comandos. Se ejecutaron el 27 de octubre de 2026 en la PC, con los \textit{sanitizers} de direcciones y de comportamiento indefinido activos, sobre la revisión \texttt{4b7dddd} de \texttt{sfy-BLE}. Los casos se resumen en la tabla \ref{tab:ensayos_ut}. Los 41 casos pasaron.
+
+\begin{table}[htbp]
+\centering
+\caption{Ensayos unitarios.}
+\label{tab:ensayos_ut}
+\small
+\begin{tabular}{L{0.09\textwidth} L{0.57\textwidth} L{0.08\textwidth} L{0.13\textwidth}}
+\toprule
+\textbf{ID} & \textbf{Qué verifica} & \textbf{Casos} & \textbf{Veredicto} \\
+\midrule
+UT-01 & Reensamblado de fragmentos recibidos en orden. & 4 de 4 & Aprobado \\
+UT-02 & Rechazo de fragmentos faltantes, duplicados, fuera de orden o con encabezado inválido, con el estado limpio después de cada rechazo. & 7 de 7 & Aprobado \\
+UT-03 & Rechazo de un mensaje con CRC32 incorrecto o alterado. & 3 de 3 & Aprobado \\
+UT-04 & Ida y vuelta de la trama segura contra una implementación independiente del lado de la aplicación. & 6 de 6 & Aprobado \\
+UT-05 & Rechazo de tramas alteradas, truncadas o cifradas con otra clave. & 3 de 3 & Aprobado \\
+UT-06 & Rechazo de tramas repetidas o con contador viejo, sin bloquear al emisor legítimo. & 4 de 4 & Aprobado \\
+UT-07 & Intercambio de autenticación, derivación de la clave de sesión e interoperabilidad con la implementación en Python del protocolo. & 9 de 9 & Aprobado \\
+UT-08 & Despacho de los comandos de control y de los comandos remotos a los callbacks del proyecto. & 5 de 5 & Aprobado \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Para comprobar que los casos detectan fallas y no solo pasan, se introdujeron a propósito cinco defectos en una copia del componente: aceptar una trama repetida, excluir campos del encabezado de la verificación, no verificar el CRC, no actualizar el contador de recepción y no comparar el código de autenticación del intercambio inicial. Cada defecto hizo fallar al menos un caso.
+
+El caso 9 de UT-07 validó la herramienta que luego se usó en placa: el módulo en C aceptó el intercambio de autenticación, descifró una trama y reensambló un mensaje fragmentado generados por la implementación en Python, con coincidencia byte a byte.
+
+UT-03 tiene una limitación de alcance: en la PC, la función de CRC de la ROM del ESP32 se reemplaza por una reimplementación. Que esa reimplementación reproduzca el valor publicado en la documentación del módulo es un indicio de que replica la ROM, pero la prueba de interoperabilidad en el equipo es la de CM-07 y SE-06.
+
+%----------------------------------------------------------------------------------------
+
+\section{Ensayos de comunicación}
+\label{sec:ensayos_comunicacion}
+
+Los ensayos de comunicación se ejecutaron en el escenario E1 con el firmware de producción, entre el 28 y el 29 de octubre de 2026. Los tres primeros se hicieron con un teléfono y nRF Connect, y el resto con scripts en la PC. La tabla \ref{tab:ensayos_cm} resume los resultados.
+
+\begin{table}[htbp]
+\centering
+\caption{Ensayos de comunicación.}
+\label{tab:ensayos_cm}
+\small
+\begin{tabular}{L{0.09\textwidth} L{0.37\textwidth} L{0.09\textwidth} L{0.32\textwidth}}
+\toprule
+\textbf{ID} & \textbf{Qué verifica} & \textbf{Req.} & \textbf{Veredicto} \\
+\midrule
+CM-01 & Anuncio con el nombre \texttt{sfy<serial>} y conexión. & R1 & Aprobado \\
+CM-02 & Descubrimiento de los 4 servicios y las 15 características. & R1 & Aprobado \\
+CM-03 & Bloqueo previo a la autenticación y suscripción posterior. & R1 & Aprobado con observación \\
+CM-04 & Pruebas de actuadores. & R2a & Aprobado \\
+CM-05 & Lectura del estado de conectividad celular. & R2b & Aprobado con observación \\
+CM-06 & Lectura de parámetros. & R2c & Aprobado \\
+CM-07 & Escritura de parámetros, también fragmentada. & R2c & Aprobado con observaciones \\
+CM-08 & Lectura de metadatos. & Soporte & Aprobado \\
+CM-09 & Sincronización horaria. & Soporte & Aprobado \\
+CM-10 & Descarga y cancelación del histórico. & Soporte & Aprobado parcial \\
+CM-11 & Comandos remotos por BLE. & Soporte & Aprobado con observación \\
+CM-12 & Canales de registros. & Soporte & Dos veredictos (sección \ref{subsec:modificaciones_criterio}) \\
+CM-13 & Reconexión sin estado anterior. & R1 & Aprobado \\
+CM-14 & Rango. & R4 & Dos veredictos (sección \ref{subsec:modificaciones_criterio}) \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Conexión, descubrimiento y autenticación}
+\label{subsec:ensayos_conexion}
+
+En CM-01 el equipo apareció anunciado como \texttt{sfy150237924583708}, con un indicador de intensidad de señal recibida (RSSI, del inglés, \textit{Received Signal Strength Indicator}) de $-$66~dBm, y aceptó la conexión. El tiempo de conexión, de unos 5~s, es una estimación de quien ejecutó el ensayo, no una medición. En CM-02 el equipo expuso los cuatro servicios propios y las 15 características, con las propiedades declaradas en el firmware y sin características de más.
+
+En CM-03, con el teléfono conectado y sin autenticar, nRF Connect aceptó activar las indicaciones de una característica, y el registro del equipo muestra que la suscripción se descartó. La suscripción hecha después de autenticar funcionó, según el script de SE-01. El veredicto es aprobado con observación: no se habilitó ninguna notificación antes de autenticar, pero no se cumplió el texto literal de la guía de ensayo, que esperaba que el equipo rechazara la suscripción, porque el equipo acepta la escritura del descriptor y la ignora.
+
+En CM-13 el script repitió durante 3~min el ciclo de conectar, autenticar, leer y desconectar, y cortó la conexión con una lectura en curso en los ciclos pares. Los 8 ciclos completaron, incluidos los 3 que siguieron a un corte, con 20 de 20 lecturas correctas y sin fallas en el registro del equipo. La reconexión posterior al último corte no se probó.
+
+\subsection{Funciones del módulo}
+\label{subsec:ensayos_funciones}
+
+En CM-04 se enviaron los comandos de prueba de luz, ventilador, resistencia y compresor, el modo de prueba y la rutina completa. Los comandos válidos se aceptaron y cambiaron el estado del controlador entre 0,7 y 2,8~s después de cada uno. El compresor se rechazó fuera del modo de prueba y al intentar apagarlo a los 4~s de encendido, y se aceptó a los 60~s. Un comando desconocido provocó el corte de la conexión. El efecto se verificó en el estado leído del controlador y en su registro, no en la salida eléctrica. El tiempo mínimo del compresor se comprobó solo en los extremos, y la rutina completa se detuvo a los 20~s, sin ejecutarse entera.
+
+En CM-05 la lectura de conectividad coincidió con el registro del equipo en todos los campos comparables: operador, tecnología, banda, canal, intensidad y calidad de señal, registro en la red y conexión con MQTT. La observación es que una lectura hecha justo cuando el módem no respondía devolvió valores de error, como un RSSI de $-$131~dBm, dentro de un documento JSON válido, con estado final correcto y con el registro en la red indicado como activo. Esa lectura consulta el módem en el momento, y hay indicios, no probados, de que puede favorecer los reinicios del módem por su \textit{watchdog}; se discuten en la sección \ref{sec:analisis_resultados}.
+
+En CM-06 la lectura de parámetros devolvió un documento JSON válido con 93 claves. El programa recurrente que contiene coincide con el que el equipo cargó al arrancar, y 103 campos leídos antes y después de 30~min de carga BLE no mostraron diferencias. El parámetro \texttt{APP\_LINK} valía 1, el modo de anuncio con datos, de modo que los ensayos de esta placa se hicieron en ese modo y no en el predeterminado.
+
+En CM-07 se escribió el punto de consigna de temperatura con un mensaje corto de un fragmento y con uno de 519~B en 6 fragmentos. Ambas escrituras se aplicaron y aparecieron en la respuesta y en la lectura posterior, y el valor se restauró. Las observaciones del veredicto son efectos laterales no pedidos. La primera escritura, que no incluía los programas recurrentes, borró el programa de ahorro de energía. Además, \texttt{RUN\_TEST\_ON\_STARTUP} pasó de 1 a 0 sin figurar en los mensajes y apareció la clave \texttt{CAM\_UPD\_MAJOR}. Los cambios se reportaron a la plataforma de pruebas. Los dos primeros se restauraron en el mismo ensayo; la clave nueva no se pudo quitar.
+
+En CM-08 la lectura de metadatos devolvió un documento JSON válido, y los campos que se pudieron contrastar coincidieron con el equipo: identificadores del módem y de la tarjeta SIM, versiones de firmware, señal, hora y operador. Se observó que el campo de versión del repositorio estaba desactualizado respecto del identificador de la compilación, y que el firmware de producción del banco se había compilado con cambios sin registrar en el repositorio.
+
+En CM-09, antes de la sincronización horaria el equipo estaba unos 2,5~s atrasado respecto de la PC, y después la diferencia fue de $-$0,17~s, dentro de la incertidumbre de la medición, de $\pm$1,8~s. El registro del equipo confirma que aplicó la hora recibida. Un mensaje sin el campo de fecha se rechazó con corte de la conexión. No se probó una hora deliberadamente desfasada.
+
+CM-10 es aprobado parcial. En la corrida del 29 de octubre la placa no tenía eventos pendientes y el equipo informó una cantidad de cero, por lo que, con el criterio fijado, ese resultado es inconcluso. Con historial real, en las repeticiones del escenario E3, llegó un mensaje por cada evento pendiente, además del que informa la cantidad, y después de la cancelación no llegó ninguno, con la conexión abierta. No se probaron el contenido de los eventos, la cancelación a mitad del envío ni la confirmación, que borra los eventos del equipo y no se ejecutó nunca.
+
+En CM-11, un comando remoto válido y uno inexistente llegaron completos al procesador de comandos del proyecto, que distinguió el desconocido. La aceptación del válido se infiere de la ausencia del mensaje de comando desconocido, porque su efecto se publica por el canal de registros de la plataforma y no se verificó allí, y porque los comandos remotos no envían respuesta por BLE.
+
+\subsection{Canales de registros}
+\label{subsec:ensayos_registros}
+
+En CM-12, \texttt{LOG-CONTROL} entregó un mensaje descifrable cuando se lo disparó con un comando de prueba fuera de modo. \texttt{LOG-TERMINAL} funcionó, pero algunas tramas llegaron truncadas y no se pudieron descifrar: 2 de 12 en la corrida más larga, recibidas con 253~B frente a 271 y 286~B esperados. La causa probable, inferida de los largos y coherente con el código, es que las notificaciones de este canal se envían sin fragmentar y, con la MTU de 256~B negociada, no pueden superar los 253~B. \texttt{LOG-SEND} no entregó ninguna notificación en unos 8~min de observación, y no se pudo comprobar la cancelación de su suscripción. Con el criterio original el ensayo no aprueba; los veredictos por canal se informan en la sección \ref{subsec:modificaciones_criterio}.
+
+\subsection{Rango}
+\label{subsec:ensayos_rango}
+
+En CM-14 se midió con una computadora portátil llevada a cada distancia, con 10 repeticiones por distancia y una medición del RSSI del anuncio antes y después. La tabla \ref{tab:rango} presenta los resultados.
+
+\begin{table}[htbp]
+\centering
+\caption{Resultados del ensayo de rango.}
+\label{tab:rango}
+\small
+\begin{tabular}{L{0.15\textwidth} L{0.19\textwidth} L{0.13\textwidth} L{0.18\textwidth} L{0.17\textwidth}}
+\toprule
+\textbf{Distancia} & \textbf{Condición} & \textbf{Correctas} & \textbf{RSSI antes / después} & \textbf{Conexión, mediana} \\
+\midrule
+1~m & Referencia & 9 de 10 & $-$60 / $-$73~dBm & 5,7~s \\
+5~m & Con la heladera en medio & 10 de 10 & $-$68 / $-$67~dBm & 4,7~s \\
+10~m, corrida 1 & Con paredes & 8 de 10 & $-$81~dBm / sin anuncios & 8,3~s \\
+10~m, corrida 2 & Con paredes & 8 de 10 & sin anuncios / $-$88~dBm & 8,4~s \\
+10~m, total & Con paredes & 16 de 20 & & \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+A 5~m con la heladera en medio el resultado fue 10 de 10 y cumple el criterio. A 10~m con paredes, los cuatro fallos fueron pérdidas del enlace: dos cortes por tiempo de espera de la conexión, una solicitud de conexión que no llegó al equipo y un reinicio del equipo. Ninguna repetición conectada falló en un comando, salvo la del reinicio. Con 16 de 20, 10~m no alcanza el criterio original y sí el modificado después de medir (sección \ref{subsec:modificaciones_criterio}). La condición de 10~m con línea de vista no se midió.
+
+El reinicio ocurrió en la corrida 1, durante el envío por indicaciones de la respuesta de parámetros. El registro del equipo muestra una aserción de la biblioteca del controlador Bluetooth del ESP32 (\texttt{rwble.c}, línea 394) seguida de una excepción y del reinicio. Resuelto contra el binario correcto, el contador de programa cae en el manejador de aserciones de ese controlador, y no en el código del proyecto. El equipo volvió a anunciarse en unos 15~s y no hubo otro reinicio en la corrida 2.
+
+El fallo de conexión de la herramienta también ocurrió una vez a 1~m, de modo que una parte de esos errores corresponde a la herramienta y no al rango. Con ese antecedente, el 10 de 10 a 5~m es un resultado frágil. El RSSI proviene de un solo adaptador y de pocas muestras, por lo que la comparación entre distancias es orientativa.
+
+%----------------------------------------------------------------------------------------
+
+\section{Ensayos de seguridad}
+\label{sec:ensayos_seguridad}
+
+Los ensayos de seguridad no responden a un requisito de la planificación: verifican el diseño descrito en la sección \ref{sec:autenticacion}. Los ejecutó un script desde la PC contra el equipo, con el firmware de producción, el 28 de octubre de 2026. Cada ensayo incluye un control positivo, es decir, la misma operación hecha correctamente, para que la ausencia de respuesta no se confunda con un fallo de la herramienta. Antes de ir a la placa, el script se probó contra un modelo simulado del equipo, debilitado a propósito en cinco puntos, y detectó cada debilidad. Ese modelo valida el script, no el firmware. La tabla \ref{tab:ensayos_se} resume los resultados: los siete ensayos aprobaron.
+
+\begin{table}[htbp]
+\centering
+\caption{Ensayos de seguridad.}
+\label{tab:ensayos_se}
+\small
+\begin{tabular}{L{0.09\textwidth} L{0.31\textwidth} L{0.31\textwidth} L{0.13\textwidth}}
+\toprule
+\textbf{ID} & \textbf{Qué verifica} & \textbf{Resultado} & \textbf{Veredicto} \\
+\midrule
+SE-01 & Suscripción antes de autenticar. & Ninguna notificación; la suscripción posterior funciona. & Aprobado \\
+SE-02 & Escritura sin autenticar en las 5 características funcionales. & Corte entre 0,05 y 0,26~s después de cada escritura. & Aprobado \\
+SE-03 & Trama con un campo alterado. & Corte, sin respuesta del equipo, en los cuatro campos. & Aprobado \\
+SE-04 & Repetición de tramas y contador viejo. & Corte en los tres casos; un salto hacia adelante se acepta. & Aprobado \\
+SE-05 & Etiqueta de autenticación inválida. & Corte, sin respuesta. & Aprobado \\
+SE-06 & CRC32 de transporte erróneo. & Rechazo con error, sin corte; el equipo sigue respondiendo. & Aprobado \\
+SE-07 & Intercambio de autenticación inválido. & Rechazo y corte en los cuatro casos. & Aprobado \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+En SE-06 el equipo rechazó el último fragmento con un error del protocolo de atributos (ATT, del inglés, \textit{Attribute Protocol}), no cortó la conexión y siguió respondiendo comandos válidos. El criterio acepta ese comportamiento, pero la documentación del módulo indica que un CRC inválido corta la conexión: la documentación y el firmware no coinciden. La primera corrida de SE-06 terminó inconclusa por un fallo de conexión de la PC y se repitió la corrida completa; la evidencia que se conserva es la de la repetición. En SE-01 se observó el mismo comportamiento que en CM-03: el equipo ignora la suscripción previa a la autenticación, sin cortar la conexión.
+
+%----------------------------------------------------------------------------------------
+
+\section{Ensayos de integración}
+\label{sec:ensayos_integracion}
+
+Los ensayos de integración verifican R5 y se ejecutaron con el firmware de ensayo con HEAPMON, que no es el de producción, en el escenario E1. La línea base y el control de IN-03 se tomaron con el firmware de producción. La carga BLE la genera \texttt{soak\_ble.py}, que en cada ciclo conecta, autentica, lee metadatos, conectividad y parámetros y desconecta, y cada 5 ciclos corta la conexión con una lectura en curso. Cada lectura verifica que el estado final llegue a correcto, que la respuesta se reensamble, se descifre y sea un documento JSON válido, y que el contador del equipo crezca.
+
+\subsection{Memoria}
+\label{subsec:ensayos_memoria}
+
+La tabla \ref{tab:ensayos_heap} resume los tres ensayos de memoria. IN-01 es la línea base sin BLE, con la pila sin inicializar; IN-02 es la resistencia de 2~h con BLE, e IN-04 mide si la RAM interna vuelve a su nivel después de 200 ciclos de conexión y desconexión sin lecturas.
+
+\begin{table}[htbp]
+\centering
+\caption{Ensayos de memoria en el escenario E1.}
+\label{tab:ensayos_heap}
+\small
+\begin{tabular}{L{0.3\textwidth} L{0.18\textwidth} L{0.18\textwidth} L{0.18\textwidth}}
+\toprule
+\textbf{Medida} & \textbf{IN-01 (sin BLE)} & \textbf{IN-02} & \textbf{IN-04} \\
+\midrule
+Duración & 143,8~min & 120,3~min & 33,6~min \\
+Ciclos correctos & no aplica & 311 de 312 & 200 de 200 \\
+Mínimo de RAM interna libre & 24\,867~B & 23\,511~B & 23\,323~B \\
+Diferencia con IN-01 & & $-$1\,356~B & $-$1\,544~B \\
+Reinicios & 0 & 0 & 0 \\
+Veredicto & Aprobado & Aprobado & Aprobado \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+En IN-02 el mínimo de RAM interna se alcanzó a los 60~s del arranque y no volvió a bajar en las 2~h, con 13\,271~B de margen sobre el umbral. Entre las primeras y las últimas 60 muestras, la RAM interna libre promedio pasó de 114\,652~B a 111\,380~B. El único ciclo fallido fue un error de conexión de la PC, sin falla correspondiente en el registro del equipo. Las 286 lecturas de conectividad, 289 de parámetros y 296 de metadatos fueron correctas, sin anomalías de protocolo. Durante la corrida el módem se registró en la red 39 veces y conectó con MQTT 20 veces; este dato se analiza con IN-03.
+
+En IN-04 la mediana de RAM interna libre fue de 115\,995~B en los 3~min previos a la primera conexión y de 115\,903~B en los 3~min posteriores, a partir de 1~min después de la última desconexión. La diferencia de $-$92~B está dentro de los 1\,024~B admitidos. Se produjo de una sola vez con la primera conexión y luego se mantuvo constante durante los 200 ciclos, de modo que no es una pérdida por ciclo. El mayor bloque libre de RAM interna se mantuvo en 34\,816~B antes, durante y después. Los 200 ciclos no cubren la memoria que podrían consumir las lecturas, las escrituras o los cortes en curso.
+
+\subsection{No interferencia con el controlador}
+\label{subsec:ensayos_no_interferencia}
+
+IN-03 compara cuatro funciones del controlador en una ventana de 2~h con la carga de IN-02 y en una ventana de línea base de 2~h con BLE activo y sin cliente. La tabla \ref{tab:ensayo_in03} resume el resultado.
+
+\begin{table}[htbp]
+\centering
+\caption{Funciones del controlador con y sin carga BLE (IN-03).}
+\label{tab:ensayo_in03}
+\small
+\begin{tabular}{L{0.36\textwidth} L{0.24\textwidth} L{0.24\textwidth}}
+\toprule
+\textbf{Medida} & \textbf{Con carga} & \textbf{Línea base} \\
+\midrule
+Lecturas del controlador & 24 & 24 \\
+Intervalo medio entre lecturas & 297,3~s & 300,1~s \\
+Eventos entregados & 24 de 24 & 24 de 24 \\
+Envíos en el momento / desde la memoria no volátil & 8 / 13 & 24 / 0 \\
+Demora hasta la entrega, mediana / máxima & 42,9~s / 1\,126~s & 2,8~s / 3,9~s \\
+Eventos con más de 30~s de demora & 16 de 24 & 0 de 24 \\
+Registros del módem en la red / conexiones MQTT & 39 / 20 & 0 / 0 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+La lectura del controlador cumple: el intervalo medio difiere en $-$0,9~\% y el mayor hueco fue de 300,3~s, frente a un límite de 600~s. La estabilidad de las tareas cumple, sin reinicios ni fallas en ninguna de las dos ventanas. Los parámetros cumplen: 103 campos idénticos antes y después de 30~min de carga. El reloj cumple, con una variación del desfase de 0,136~s como máximo. La telemetría no cumple el criterio original: aplicado a los envíos en el momento, que es la marca declarada, quedan 8 envíos frente a 25 y un hueco máximo de 3\,243~s frente a 593~s de límite. Ningún evento se perdió, pero la mayoría llegó tarde. Los dos veredictos se informan en la sección \ref{subsec:modificaciones_criterio}.
+
+Este resultado tiene cuatro limitaciones que deben leerse junto con el veredicto:
+
+\begin{itemize}
+\item La NVC3 del banco no tenía el controlador de una heladera conectado: la marca de lectura mide que la tarea de lectura sigue su cadencia, no que se lea un controlador real.
+\item La carga del generador, de una conexión cada unos 25~s durante 2~h con lectura de conectividad en cada ciclo, es extrema. No se midió una carga realista.
+\item La causa de los registros del módem está sin determinar. Una réplica con el firmware de producción dio 13 registros en 30~min, inmediatamente después de 2~h sin ninguno. Además, entre las 15:41 y las 16:07 del mismo día hubo 6 registros cada unos 5~min sin ningún cliente BLE conectado.
+\item El control diseñado para separar la causa fue inconcluso. Comparó ventanas con lecturas de metadatos y parámetros (A1 y A2) y con lecturas de conectividad (B), con una referencia sin cliente. En la referencia no hubo eventos del módem; en A1, sin lecturas de conectividad, hubo 2 avisos de módem sin respuesta y 3 registros, de modo que la lectura de conectividad no es necesaria para provocarlos. B y A2 se cortaron antes de tiempo porque el cliente de la PC no logró completar 8 conexiones seguidas, con el equipo activo y anunciándose.
+\end{itemize}
+
+%----------------------------------------------------------------------------------------
+
+\section{Matriz de escenarios celulares}
+\label{sec:ensayos_escenarios}
+
+La matriz repite en cada escenario los ensayos CM-03 a CM-07, CM-10 e IN-02, con los mismos criterios. En E2 y E3 la herramienta \texttt{es\_matrix.py} ejecuta 6 pasadas de las 6 comprobaciones; en CM-04 usa solo la luz y el modo de prueba, y en CM-10 pide el historial y lo cancela, sin confirmar. Los escenarios E2 y E3 se ejecutaron con el firmware de ensayo con HEAPMON y la tarea de radio correspondiente, que no es el de producción.
+
+\subsection{Escenario E1}
+\label{subsec:escenario_e1}
+
+En E1 los ensayos de la matriz se ejecutaron como ensayos individuales, con sus fichas: CM-03 a CM-07 y CM-10 en la sección \ref{sec:ensayos_comunicacion} e IN-02 en la sección \ref{sec:ensayos_integracion}.
+
+\subsection{Escenario E2}
+\label{subsec:escenario_e2}
+
+La matriz de E2 cumplió las 36 comprobaciones de las 6 pasadas y se aprobó. La observación es que la lectura de conectividad llega degradada cuando el módem no tiene red, con un RSSI de $-$131~dBm y la tecnología indicada como error o sin servicio. Los campos de registro en la red y de conexión con MQTT figuraron activos en las 6 pasadas, también con la radio apagada, porque informan el último estado conocido y no una medición en el momento.
+
+E2 no es un patrón limpio de 240~s con red y 60~s sin red. De los 50 cambios de radio, 8 fallaron, y el apagado llegó a tardar 10~s. En la pasada 6, la tarea había marcado la radio como apagada, pero el módem estaba en servicio. Por lo tanto, E2 se describe como red intermitente con fallas del propio mecanismo que cambia la radio.
+
+En el IN-02 de E2 completaron 310 de 313 ciclos, el mínimo de RAM interna fue de 20\,995~B y no hubo anomalías de protocolo. Según la marca de fase de la tarea, completaron 117 de 118 ciclos sin red y 193 de 195 con red. Dos ciclos fallidos fueron errores de conexión de la herramienta. El tercero fue un reinicio del equipo a las 14:32, con la misma aserción de \texttt{rwble.c} observada en CM-14, una excepción y un registro de la pila de llamadas corrupto, que no se pudo resolver. Veintitrés segundos antes, el módem había dejado de responder y el reencendido de la radio había fallado. Con ese reinicio no se cumple el criterio original de IN-02; los dos veredictos se informan en la sección \ref{subsec:modificaciones_criterio}. El reinicio de E2 y el de CM-14 comparten el síntoma, pero no está probado que tengan la misma causa.
+
+Después del reinicio, la RAM interna libre bajó de unos 110\,000~B a 37\,575~B cuando el firmware activó una función propia que se habilita después de 60~min sin conexión con MQTT, condición provocada por los cortes forzados. El mínimo de la corrida, 20\,995~B, se alcanzó en esa condición y sigue por encima del umbral, pero el margen con BLE y esa función activos es de unos 10,7~KB. No se debe a BLE, y es el caso de menor margen medido.
+
+\subsection{Escenario E3}
+\label{subsec:escenario_e3}
+
+E3 se ejecutó con la Raspberry Pi del banco como cliente BLE, y no con la PC con Windows de E1 y E2. La matriz se corrió tres veces, como resume la tabla \ref{tab:matriz_e3}.
+
+\begin{table}[htbp]
+\centering
+\caption{Corridas de la matriz en el escenario E3.}
+\label{tab:matriz_e3}
+\small
+\begin{tabular}{L{0.1\textwidth} L{0.16\textwidth} L{0.18\textwidth} L{0.42\textwidth}}
+\toprule
+\textbf{Corrida} & \textbf{Radio} & \textbf{Pasadas completas} & \textbf{Observaciones} \\
+\midrule
+1 & Apagada & 1 de 6 & Pasadas 2 a 6: equipo no encontrado, por un defecto de la herramienta en Linux. \\
+2 & Encendida & 5 de 6 & No corresponde a E3: el módem se había reactivado. Pasada 1: autenticación fallida. \\
+3 & Apagada & 4 de 6 & Pasadas 2 y 6: autenticación fallida; al fallar CM-03 la pasada se detiene. \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+La herramienta \texttt{es\_matrix.py} buscaba el equipo una sola vez y reutilizaba el objeto en todas las pasadas; en BlueZ ese objeto se descarta al desconectar. El defecto se corrigió después de verlo, haciendo una nueva búsqueda en cada pasada sin cambiar la matriz ni los criterios, y se declara en la ficha. Con la radio comprobadamente apagada, las comprobaciones que llegaron a ejecutarse dieron el mismo resultado que en E1 y E2. En CM-10 la cantidad de eventos pendientes creció entre pasadas, porque el equipo sin red acumula eventos que no puede enviar.
+
+En el IN-02 de E3 completaron 343 de 388 ciclos. De los 45 fallidos, 40 fueron autenticaciones interrumpidas, repartidas de forma pareja a lo largo de toda la corrida. No hubo anomalías de protocolo ni reinicios visibles, y el mínimo de RAM interna fue de 23\,087~B. Con el cliente de Windows, E1 y E2 habían tenido 1 y 3 ciclos fallidos en unos 310. En el único fallo de autenticación con registro serie disponible, el equipo completó la autenticación y fue el cliente el que cerró la conexión 2,3~s después. Ese caso apunta al cliente, pero los registros de los demás fallos se perdieron: el banco conserva solo las últimas 5\,000 líneas y no se recogieron durante la corrida.
+
+Además, la radio no estuvo apagada todo el tiempo. Cada vez que el módem se reinició por su \textit{watchdog}, el equipo volvió a registrarse en la red. En un caso la tarea la apagó de nuevo unos 40~s después, y en otro no se observó el aviso en más de 5~min. No se sabe qué parte del IN-02 se ejecutó con la radio apagada.
+
+Con el criterio original, E3 no aprueba: la matriz completó 4 de 6 pasadas con la radio apagada, e IN-02 tuvo 45 ciclos fallidos frente a 1 admitido. El veredicto del autor es inconcluso, a la espera de repetir la prueba con la PC con Windows, porque cambiaron a la vez el cliente y el escenario y porque la radio se reactivaba con cada reinicio del módem. Esa repetición no se hizo, por lo que E3 queda sin veredicto definitivo.
+
+%----------------------------------------------------------------------------------------
+
+\section{Análisis de resultados}
+\label{sec:analisis_resultados}
+
+La tabla \ref{tab:trazabilidad} relaciona cada requisito con los ensayos que lo verifican y su resultado.
+
+\begin{table}[htbp]
+\centering
+\caption{Trazabilidad entre requisitos, ensayos y resultados.}
+\label{tab:trazabilidad}
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{L{0.12\textwidth} L{0.21\textwidth} L{0.56\textwidth}}
+\toprule
+\textbf{Requisito} & \textbf{Ensayos} & \textbf{Resultado} \\
+\midrule
+R1 & CM-01, CM-02, CM-03, CM-13 & Aprobados; CM-03 con observación (la suscripción previa se ignora, no se rechaza). \\
+R2a & CM-04 (UT-08) & Aprobado. Efecto verificado en el estado del controlador, no en la salida eléctrica. \\
+R2b & CM-05 & Aprobado con observación (sin módem, valores de error con estado correcto). \\
+R2c & CM-06, CM-07 & Aprobados; CM-07 con observaciones (efectos laterales de una escritura parcial). \\
+R3 & Matriz en E3 & Inconcluso por decisión del autor; con el criterio original, no aprobado. Parcialmente cubierto: sin red, BLE conectó, autenticó, leyó, escribió y devolvió el historial, pero con autenticaciones fallidas que no aparecieron con el cliente de Windows. \\
+R4 & CM-14 & 5~m con obstáculo: aprobado (10 de 10). 10~m con paredes: 16 de 20, no aprobado con el criterio original y aprobado con el modificado después de medir. 10~m con línea de vista: no medido. \\
+R5 & IN-01 a IN-04 & IN-01, IN-02 (E1) e IN-04 aprobados. IN-03: no aprobado con el criterio original y aprobado con observación con el modificado. En E2, un reinicio; en todos los escenarios, el mínimo de RAM interna quedó por encima del umbral. \\
+R6 & Matriz en E1, E2 y E3 & E1 ejecutado en las fichas individuales. E2: matriz aprobada (36 de 36) e IN-02 aprobado por decisión del autor. E3: inconcluso. \\
+Diseño (seguridad) & UT-04 a UT-07, SE-01 a SE-07 & Aprobados. \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+R1 y R2 quedaron verificados con observaciones que no impiden el uso. R4 cumple a 5~m, y a 10~m con paredes depende del criterio aplicado. R5 se verificó en cuanto a memoria, con márgenes amplios sobre el umbral, pero no queda resuelto en cuanto a la telemetría ni a los reinicios observados. R3 y R6 quedan abiertos mientras no se repita E3.
+
+Los ensayos dejaron, además, las siguientes observaciones, que no son fallas de un ensayo, sino del diseño o del entorno, y que conviene atender:
+
+\begin{itemize}
+\item Un enlace débil o una pérdida del enlace durante una transferencia puede reiniciar el equipo. La aserción de \texttt{rwble.c} apareció una vez en CM-14 y una vez en el IN-02 de E2, en ambos casos con un reinicio. No está probado que tengan la misma causa.
+\item Las lecturas por BLE coincidieron con avisos de módem sin respuesta y con nuevos registros en la red: 39 registros en el IN-02 de E1, ninguno en IN-04, que no hace lecturas, y eventos también con lecturas que no consultan el módem. La causa sigue sin determinar.
+\item Una escritura parcial de parámetros borra los programas recurrentes que no incluye (CM-07).
+\item Las tramas de \texttt{LOG-TERMINAL} que superan la MTU llegan truncadas (CM-12).
+\item Sin módem, la lectura de conectividad devuelve valores de error con estado correcto (CM-05).
+\item Con MQTT caído durante 60~min, una función propia del firmware reduce el margen de RAM interna a unos 10,7~KB (E2).
+\item El escenario E2 por software no reproduce un patrón limpio: 8 de 50 cambios de radio fallaron.
+\end{itemize}
+
+Todos los ensayos en placa se hicieron con una sola placa, en general con una sola corrida por ensayo, y los de integración y escenarios con un firmware de ensayo que no es el de producción. Los resultados describen ese equipo y esas corridas, no una distribución.

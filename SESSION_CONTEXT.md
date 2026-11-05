@@ -170,6 +170,17 @@ Advertencias actuales no bloqueantes:
 - Preámbulo: `placeins`, `array` con columna `L{}` (sin justificar) y páginas
   de flotantes alineadas arriba (`\@fptop=0pt`).
 
+## Capítulo 4 (2026-11-02)
+
+- Escrito en `Chapters/Chapter4.tex` desde `sfy-base/workspace/Sensify-N150V2r2/sfy-core/sfy-BLE/docs/ensayos/`
+  (rama `docs/ensayos-ble`): plan, fichas y evidencia. No se modifican esos archivos.
+- Estructura: 4.1 Plan (requisitos, criterios, banco, escenarios, ejecución con el agente de IA en forma
+  impersonal ("el autor"), 4.1.5 modificaciones de criterio con tabla), 4.2 UT, 4.3 CM, 4.4 SE, 4.5 IN, 4.6 matriz de
+  escenarios, 4.7 análisis y trazabilidad.
+- Reglas: no inventar ni redondear; fallos como fallos; dos veredictos donde la ficha los tiene; E3
+  inconcluso (ni aprueba ni reprueba); firmware de integración no es el de producción.
+- Pendientes del autor en `pendientes-capitulo4.md`.
+
 ## Próximo paso recomendado
 
 `ble-Main` ya fue revisado contra el código (estados, mutex recursivo compartido

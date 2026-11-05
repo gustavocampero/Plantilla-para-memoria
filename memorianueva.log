@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.29 (MiKTeX 26.5) (preloaded format=pdflatex 2026.9.4)  15 OCT 2026 11:07
+This is pdfTeX, Version 3.141592653-2.6-1.40.29 (MiKTeX 26.5) (preloaded format=pdflatex 2026.9.4)  2 NOV 2026 16:09
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -975,7 +975,7 @@ LaTeX Font Info:    Font shape `T1/phv/m/it' in size <10> not available
 
 pdfTeX warning: pdflatex.exe (file ./Figures/fondo.pdf): PDF inclusion: found P
 DF version <1.6>, but at most version <1.5> allowed
-<Figures/fondo.pdf, id=227, 597.55246pt x 845.07718pt>
+<Figures/fondo.pdf, id=307, 597.55246pt x 845.07718pt>
 File: Figures/fondo.pdf Graphic file (type pdf)
 <use Figures/fondo.pdf>
 Package pdftex.def Info: Figures/fondo.pdf  used on input line 51.
@@ -1061,7 +1061,7 @@ LaTeX Font Info:    External font `cmex10' loaded for size
 
 Package hyperref Warning: Ignoring empty anchor on input line 17.
 
-<Figures/Sensify.jpg, id=413, 1284.8pt x 885.3075pt>
+<Figures/Sensify.jpg, id=537, 1284.8pt x 885.3075pt>
 File: Figures/Sensify.jpg Graphic file (type jpg)
 <use Figures/Sensify.jpg>
 Package pdftex.def Info: Figures/Sensify.jpg  used on input line 21.
@@ -1153,7 +1153,7 @@ LaTeX Info: Redefining \% on input line 122.
 
  (Chapters/Chapter2.tex
 Cap\'{\i }tulo 2.
-<Figures/cicloRefrigeracion.png, id=444, 1505.625pt x 1052.93375pt>
+<Figures/cicloRefrigeracion.png, id=568, 1505.625pt x 1052.93375pt>
 File: Figures/cicloRefrigeracion.png Graphic file (type png)
 <use Figures/cicloRefrigeracion.png>
 Package pdftex.def Info: Figures/cicloRefrigeracion.png  used on input line 20.
@@ -1165,7 +1165,7 @@ Package pdftex.def Info: Figures/cicloRefrigeracion.png  used on input line 20.
 
 
 ]
-<Figures/N150_render.jpg, id=452, 1505.625pt x 1129.21875pt>
+<Figures/N150_render.jpg, id=576, 1505.625pt x 1129.21875pt>
 File: Figures/N150_render.jpg Graphic file (type jpg)
 <use Figures/N150_render.jpg>
 Package pdftex.def Info: Figures/N150_render.jpg  used on input line 38.
@@ -1173,7 +1173,7 @@ Package pdftex.def Info: Figures/N150_render.jpg  used on input line 38.
 LaTeX Info: Redefining \. on input line 45.
 LaTeX Info: Redefining \% on input line 45.
  [6 <./Figures/cicloRefrigeracion.png (PNG copy)> <./Figures/N150_render.jpg>]
-<Figures/oem.jpg, id=463, 3011.25pt x 2007.5pt>
+<Figures/oem.jpg, id=587, 3011.25pt x 2007.5pt>
 File: Figures/oem.jpg Graphic file (type jpg)
 <use Figures/oem.jpg>
 Package pdftex.def Info: Figures/oem.jpg  used on input line 50.
@@ -1181,7 +1181,7 @@ Package pdftex.def Info: Figures/oem.jpg  used on input line 50.
 LaTeX Info: Redefining \. on input line 66.
 LaTeX Info: Redefining \% on input line 66.
  [7 <./Figures/oem.jpg>]
-<Figures/conexionN150.pdf, id=474, 442.06755pt x 188.2523pt>
+<Figures/conexionN150.pdf, id=598, 442.06755pt x 188.2523pt>
 File: Figures/conexionN150.pdf Graphic file (type pdf)
 <use Figures/conexionN150.pdf>
 Package pdftex.def Info: Figures/conexionN150.pdf  used on input line 71.
@@ -1200,7 +1200,7 @@ LaTeX Info: Redefining \% on input line 123.
 
 (Chapters/Chapter3.tex
 Cap\'{\i }tulo 3.
-<Figures/arquitecturaDiagrama2.png, id=527, 820.06375pt x 1000.73875pt>
+<Figures/arquitecturaDiagrama2.png, id=651, 820.06375pt x 1000.73875pt>
 File: Figures/arquitecturaDiagrama2.png Graphic file (type png)
 <use Figures/arquitecturaDiagrama2.png>
 Package pdftex.def Info: Figures/arquitecturaDiagrama2.png  used on input line 
@@ -1242,7 +1242,7 @@ LaTeX Info: Redefining \% on input line 184.
 LaTeX Info: Redefining \. on input line 224.
 LaTeX Info: Redefining \% on input line 224.
  [19]
-<Figures/displayVirtual.png, id=584, 299.61937pt x 514.17094pt>
+<Figures/displayVirtual.png, id=708, 299.61937pt x 514.17094pt>
 File: Figures/displayVirtual.png Graphic file (type png)
 <use Figures/displayVirtual.png>
 Package pdftex.def Info: Figures/displayVirtual.png  used on input line 234.
@@ -1250,7 +1250,7 @@ Package pdftex.def Info: Figures/displayVirtual.png  used on input line 234.
 LaTeX Info: Redefining \. on input line 240.
 LaTeX Info: Redefining \% on input line 240.
  [20 <./Figures/displayVirtual.png>]
-<Figures/flujoAdvDatos.jpg, id=591, 720.6925pt x 1000.73875pt>
+<Figures/flujoAdvDatos.jpg, id=715, 720.6925pt x 1000.73875pt>
 File: Figures/flujoAdvDatos.jpg Graphic file (type jpg)
 <use Figures/flujoAdvDatos.jpg>
 Package pdftex.def Info: Figures/flujoAdvDatos.jpg  used on input line 247.
@@ -1280,7 +1280,7 @@ Overfull \hbox (0.82098pt too wide) in paragraph at lines 447--459
 LaTeX Info: Redefining \. on input line 466.
 LaTeX Info: Redefining \% on input line 466.
 [27]
-<Figures/historico.jpg, id=630, 605.26125pt x 1001.7425pt>
+<Figures/historico.jpg, id=754, 605.26125pt x 1001.7425pt>
 File: Figures/historico.jpg Graphic file (type jpg)
 <use Figures/historico.jpg>
 Package pdftex.def Info: Figures/historico.jpg  used on input line 469.
@@ -1288,7 +1288,7 @@ Package pdftex.def Info: Figures/historico.jpg  used on input line 469.
 LaTeX Info: Redefining \. on input line 477.
 LaTeX Info: Redefining \% on input line 477.
  [28 <./Figures/historico.jpg>]
-<Figures/params.jpg, id=636, 906.38625pt x 647.41875pt>
+<Figures/params.jpg, id=760, 906.38625pt x 647.41875pt>
 File: Figures/params.jpg Graphic file (type jpg)
 <use Figures/params.jpg>
 Package pdftex.def Info: Figures/params.jpg  used on input line 487.
@@ -1296,7 +1296,7 @@ Package pdftex.def Info: Figures/params.jpg  used on input line 487.
 LaTeX Info: Redefining \. on input line 493.
 LaTeX Info: Redefining \% on input line 493.
  [29 <./Figures/params.jpg>]
-<Figures/comando.jpg, id=643, 521.95pt x 410.53375pt>
+<Figures/comando.jpg, id=767, 521.95pt x 410.53375pt>
 File: Figures/comando.jpg Graphic file (type jpg)
 <use Figures/comando.jpg>
 Package pdftex.def Info: Figures/comando.jpg  used on input line 505.
@@ -1316,17 +1316,65 @@ LaTeX Info: Redefining \% on input line 124.
 
 ]
 Cap\'{\i }tulo 4.
-) [33]
+[33]
+LaTeX Info: Redefining \. on input line 64.
+LaTeX Info: Redefining \% on input line 64.
+ [34]
+LaTeX Info: Redefining \. on input line 93.
+LaTeX Info: Redefining \% on input line 93.
+ [35]
+LaTeX Info: Redefining \. on input line 135.
+LaTeX Info: Redefining \% on input line 135.
+ [36]
+LaTeX Info: Redefining \. on input line 170.
+LaTeX Info: Redefining \% on input line 170.
+ [37]
+Overfull \hbox (0.24332pt too wide) in paragraph at lines 208--209
+\T1/ppl/m/n/10.95 in-di-ca-dor de in-ten-si-dad de se-ñal re-ci-bi-da (RS-SI, d
+el in-glés, \T1/ppl/m/it/10.95 Re-cei-ved Sig-nal Strength
+ []
+
+LaTeX Info: Redefining \. on input line 213.
+LaTeX Info: Redefining \% on input line 213.
+[38]
+LaTeX Info: Redefining \. on input line 222.
+LaTeX Info: Redefining \% on input line 222.
+ [39]
+LaTeX Info: Redefining \. on input line 242.
+LaTeX Info: Redefining \% on input line 242.
+ [40]
+LaTeX Info: Redefining \. on input line 295.
+LaTeX Info: Redefining \% on input line 295.
+ [41]
+LaTeX Info: Redefining \. on input line 328.
+LaTeX Info: Redefining \% on input line 328.
+ [42]
+LaTeX Info: Redefining \. on input line 357.
+LaTeX Info: Redefining \% on input line 357.
+ [43]
+LaTeX Info: Redefining \. on input line 383.
+LaTeX Info: Redefining \% on input line 383.
+ [44]
+LaTeX Info: Redefining \. on input line 414.
+LaTeX Info: Redefining \% on input line 414.
+ [45]
+LaTeX Info: Redefining \. on input line 460.
+LaTeX Info: Redefining \% on input line 460.
+ [46])
+LaTeX Info: Redefining \. on input line 125.
+LaTeX Info: Redefining \% on input line 125.
+ [47]
 \openout2 = `Chapters/Chapter5.aux'.
 
- (Chapters/Chapter5.tex [34
+ (Chapters/Chapter5.tex
+[48
 
 
 
 
 ]
 Cap\'{\i }tulo 5.
-) [35] [36
+) [49] [50
 
 
 
@@ -1343,7 +1391,7 @@ Overfull \hbox (12.19771pt too wide) in paragraph at lines 144--144
 . pdf$[][] (vi-si-ta-do 04[]09[]2026). 
  []
 
-[37] (memorianueva.aux (portada.aux)
+[51] (memorianueva.aux (portada.aux)
 LaTeX Info: Redefining \. on input line 16.
 LaTeX Info: Redefining \% on input line 16.
  (Chapters/Chapter1.aux)
@@ -1358,7 +1406,7 @@ L3 programming layer <2026-08-10>
 LaTeX Warning: There were undefined references.
 
 Package rerunfilecheck Info: File `memorianueva.out' has not changed.
-(rerunfilecheck)             Checksum: 3819A0D05316AAC912991FF04E6C2989;10906.
+(rerunfilecheck)             Checksum: 46CBEA827522C69619501B3DF00384AD;14389.
 
 Package biblatex Warning: Please (re)run BibTeX on the file(s):
 (biblatex)                memorianueva
@@ -1369,10 +1417,10 @@ Package logreq Info: Writing requests to 'memorianueva.run.xml'.
 
  ) 
 Here is how much of TeX's memory you used:
- 31745 strings out of 467441
- 694730 string characters out of 5408564
- 1312231 words of memory out of 5000000
- 60522 multiletter control sequences out of 15000+600000
+ 31847 strings out of 467441
+ 696421 string characters out of 5408564
+ 1316155 words of memory out of 5000000
+ 60578 multiletter control sequences out of 15000+600000
  694025 words of font info for 121 fonts, out of 8000000 for 9000
  1142 hyphenation exceptions out of 8191
  96i,21n,95p,1971b,2956s stack positions out of 10000i,1000n,20000p,200000b,200000s
@@ -1380,19 +1428,20 @@ Here is how much of TeX's memory you used:
 ontAwesome5Brands-Regular.pfb><C:/Users/Gus/AppData/Local/Programs/MiKTeX/fonts
 /type1/public/fontawesome5/FontAwesome5Free-Solid.pfb><C:/Users/Gus/AppData/Loc
 al/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy10.pfb><C:/Users/Gus/AppD
-ata/Local/Programs/MiKTeX/fonts/type1/urw/courier/ucrb8a.pfb><C:/Users/Gus/AppD
-ata/Local/Programs/MiKTeX/fonts/type1/urw/courier/ucrr8a.pfb><C:/Users/Gus/AppD
-ata/Local/Programs/MiKTeX/fonts/type1/urw/helvetic/uhvb8a.pfb><C:/Users/Gus/App
-Data/Local/Programs/MiKTeX/fonts/type1/urw/helvetic/uhvr8a.pfb><C:/Users/Gus/Ap
-pData/Local/Programs/MiKTeX/fonts/type1/urw/helvetic/uhvro8a.pfb><C:/Users/Gus/
-AppData/Local/Programs/MiKTeX/fonts/type1/urw/palatino/uplb8a.pfb><C:/Users/Gus
-/AppData/Local/Programs/MiKTeX/fonts/type1/urw/palatino/uplb8a.pfb><C:/Users/Gu
-s/AppData/Local/Programs/MiKTeX/fonts/type1/urw/palatino/uplr8a.pfb><C:/Users/G
-us/AppData/Local/Programs/MiKTeX/fonts/type1/urw/palatino/uplr8a.pfb><C:/Users/
-Gus/AppData/Local/Programs/MiKTeX/fonts/type1/urw/palatino/uplri8a.pfb>
-Output written on memorianueva.pdf (51 pages, 3104692 bytes).
+ata/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy9.pfb><C:/Users/Gu
+s/AppData/Local/Programs/MiKTeX/fonts/type1/urw/courier/ucrb8a.pfb><C:/Users/Gu
+s/AppData/Local/Programs/MiKTeX/fonts/type1/urw/courier/ucrr8a.pfb><C:/Users/Gu
+s/AppData/Local/Programs/MiKTeX/fonts/type1/urw/helvetic/uhvb8a.pfb><C:/Users/G
+us/AppData/Local/Programs/MiKTeX/fonts/type1/urw/helvetic/uhvr8a.pfb><C:/Users/
+Gus/AppData/Local/Programs/MiKTeX/fonts/type1/urw/helvetic/uhvro8a.pfb><C:/User
+s/Gus/AppData/Local/Programs/MiKTeX/fonts/type1/urw/palatino/uplb8a.pfb><C:/Use
+rs/Gus/AppData/Local/Programs/MiKTeX/fonts/type1/urw/palatino/uplb8a.pfb><C:/Us
+ers/Gus/AppData/Local/Programs/MiKTeX/fonts/type1/urw/palatino/uplr8a.pfb><C:/U
+sers/Gus/AppData/Local/Programs/MiKTeX/fonts/type1/urw/palatino/uplr8a.pfb><C:/
+Users/Gus/AppData/Local/Programs/MiKTeX/fonts/type1/urw/palatino/uplri8a.pfb>
+Output written on memorianueva.pdf (65 pages, 3183624 bytes).
 PDF statistics:
- 784 PDF objects out of 1000 (max. 8388607)
- 148 named destinations out of 1000 (max. 500000)
- 509 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 1007 PDF objects out of 1200 (max. 8388607)
+ 194 named destinations out of 1000 (max. 500000)
+ 669 words of extra memory for PDF output out of 10000 (max. 10000000)
 
